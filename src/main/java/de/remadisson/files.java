@@ -1,13 +1,18 @@
 package de.remadisson;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.mongodb.util.JSON;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import de.remadisson.api.FileAPI;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class files {
 
@@ -19,21 +24,51 @@ public class files {
     public static final String console = "§eRainbowCore " + prefix;
     public static final String debug = "§8[§dDEBUG§8] " + console;
 
+    public static final String message_no_permission = prefix + "§cYou have no permission to perform this command!";
+
+    // Saving Files with their context (JSON)
+    public static ArrayList<FileAPI> files = new ArrayList<>();
+
+    // Saving Servers with ther Lockdown Statuses
     public static HashMap<String, Boolean> lockdown = new HashMap<>();
 
-
+    /**
+     * This Method uses JSON Strings to make clear if there are any servers, where normal players should'nt join.
+     * @param logger
+     * @param server
+     */
     public static void loadLockdownFile(Logger logger, ProxyServer server){
+        // Initing the FileAPI -> Creating Files and Checking if they're empty
         FileAPI config = new FileAPI(logger,"config.json", "plugins/RainbowCore/");
+
         try {
-            JsonObject lockdownedServers = new JsonObject();
-            lockdownedServers.addProperty("global", false);
-            for(RegisteredServer servers : server.getAllServers()){
-                lockdownedServers.addProperty(servers.getServerInfo().getName(), false);
+            if(!config.contains("lockdown")) {
+
+                // Adding Servers to an JSON
+                JsonObject lockdownedServers = new JsonObject();
+                lockdownedServers.addProperty("global", false);
+
+                for (RegisteredServer servers : server.getAllServers()) {
+                    lockdownedServers.addProperty(servers.getServerInfo().getName(), false);
+                }
+
+                config.add("lockdown", lockdownedServers).save();
             }
-            config.add("lockdown", lockdownedServers).save();
+                // Getting the servers from JSON
+                JsonObject obj = JsonParser.parseString(JSON.parse(config.getObject("lockdown").toString()).toString()).getAsJsonObject();
+
+                // Appling Servers and their values to an HashMap
+                for (Map.Entry<String, JsonElement> s : obj.entrySet()) {
+                    lockdown.put(s.getKey(), s.getValue().getAsBoolean());
+                }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // Adding config to an Arraylist, to edit it later!
+        files.add(config);
     }
 
 }

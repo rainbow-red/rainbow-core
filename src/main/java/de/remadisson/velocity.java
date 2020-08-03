@@ -34,10 +34,12 @@ public class velocity {
             // Sending a Message to Console
             logger.info((prefix + "§aRainbow-Core is now starting!"));
 
+            //Creating new Lockdown JSON-File
+            files.loadLockdownFile(logger, server);
+
             // Registering Commands
             final CommandManager cm = server.getCommandManager();
             cm.register(new lockdownCommand(), "lockdown");
-
 
     }
 
@@ -46,9 +48,6 @@ public class velocity {
         /*
          * Executed after finishing!
          */
-
-            //Creating new Lockdown JSON-File
-            files.loadLockdownFile(logger, server);
 
         // Sending a Message to Console
         logger.info((prefix + "§2Rainbow-Core has successfully been started!"));

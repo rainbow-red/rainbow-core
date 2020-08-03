@@ -50,23 +50,20 @@ public class FileAPI {
 
         try {
             // Loading the Config into the Variable
-            content = readJSON();
+            content = readJSON().isJsonNull() ? new JsonObject() : readJSON().getAsJsonObject();
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
 
     }
 
-    private JsonObject readJSON() throws IOException, ParseException {
+    private JsonElement readJSON() throws IOException, ParseException {
         JsonParser parser = new JsonParser();
         FileReader reader = new FileReader(file);
 
         JsonElement object = parser.parse(reader);
-        try {
-            return object.getAsJsonObject();
-        } catch(NullPointerException ex) {
-            return new JsonObject();
-        }
+
+       return object;
     }
 
     public FileAPI set(Object key, Object value){
@@ -106,6 +103,10 @@ public class FileAPI {
         return content.get(String.valueOf(key));
     }
 
+    public static Object getJsonObject(JsonObject json, Object key){
+        return json.get(String.valueOf(key));
+    }
+
     public boolean contains(Object key){
         return content.get(String.valueOf(key)) != null;
     }
@@ -113,7 +114,7 @@ public class FileAPI {
     public FileAPI reload(){
         try {
             // Reading File
-            JsonObject object = readJSON();
+            JsonObject object = readJSON().isJsonNull() ? new JsonObject() : readJSON().getAsJsonObject();
 
             // Checking for JsonContent
             if(object.getAsJsonArray().size() > 1){
