@@ -5,6 +5,7 @@ import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.plugin.PluginManager;
 import com.velocitypowered.api.proxy.ProxyServer;
 import de.remadisson.commands.lockdownCommand;
 import org.slf4j.Logger;
@@ -22,8 +23,9 @@ public class velocity {
     private final String prefix = files.console;
     private Logger logger;
     private ProxyServer server;
+
     @Inject
-    public velocity(ProxyServer server, Logger logger){
+    public velocity(ProxyServer server, Logger logger) {
         this.server = server;
         this.logger = logger;
 
@@ -31,15 +33,11 @@ public class velocity {
          *  Executed while loading
          */
 
-            // Sending a Message to Console
-            logger.info((prefix + "§aRainbow-Core is now starting!"));
+        // Sending a Message to Console
+        logger.info((prefix + "§aRainbow-Core is now starting!"));
 
-            //Creating new Lockdown JSON-File
-            files.loadLockdownFile(logger, server);
-
-            // Registering Commands
-            final CommandManager cm = server.getCommandManager();
-            cm.register(new lockdownCommand(), "lockdown");
+        //Creating new Lockdown JSON-File
+        files.loadLockdownFile(logger, server);
 
     }
 
@@ -48,6 +46,10 @@ public class velocity {
         /*
          * Executed after finishing!
          */
+
+        // Registering Commands
+        final CommandManager cm = server.getCommandManager();
+        cm.register(new lockdownCommand(), "lockdown");
 
         // Sending a Message to Console
         logger.info((prefix + "§2Rainbow-Core has successfully been started!"));

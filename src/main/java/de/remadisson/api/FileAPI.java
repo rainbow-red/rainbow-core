@@ -63,7 +63,7 @@ public class FileAPI {
 
         JsonElement object = parser.parse(reader);
 
-       return object;
+        return object;
     }
 
     public FileAPI set(Object key, Object value){

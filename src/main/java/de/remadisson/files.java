@@ -1,5 +1,6 @@
 package de.remadisson;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -7,6 +8,7 @@ import com.mongodb.util.JSON;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import de.remadisson.api.FileAPI;
+import de.remadisson.manager.LockdownServer;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -30,7 +32,7 @@ public class files {
     public static ArrayList<FileAPI> files = new ArrayList<>();
 
     // Saving Servers with ther Lockdown Statuses
-    public static HashMap<String, Boolean> lockdown = new HashMap<>();
+    public static HashMap<String, LockdownServer> lockdown = new HashMap<>();
 
     /**
      * This Method uses JSON Strings to make clear if there are any servers, where normal players should'nt join.
@@ -46,10 +48,16 @@ public class files {
 
                 // Adding Servers to an JSON
                 JsonObject lockdownedServers = new JsonObject();
-                lockdownedServers.addProperty("global", false);
+                JsonObject lockdowndetails = new JsonObject();
+                JsonArray users = new JsonArray();
+
+                lockdowndetails.addProperty("status", false);
+                lockdowndetails.add("users", users);
+
+                lockdownedServers.add("global", lockdowndetails);
 
                 for (RegisteredServer servers : server.getAllServers()) {
-                    lockdownedServers.addProperty(servers.getServerInfo().getName(), false);
+                    lockdownedServers.add(servers.getServerInfo().getName(), lockdowndetails);
                 }
 
                 config.add("lockdown", lockdownedServers).save();
@@ -59,7 +67,9 @@ public class files {
 
                 // Appling Servers and their values to an HashMap
                 for (Map.Entry<String, JsonElement> s : obj.entrySet()) {
-                    lockdown.put(s.getKey(), s.getValue().getAsBoolean());
+                    //lockdown.put(s.getKey(), s.getValue().getAsBoolean());
+                    JsonObject values = s.getValue().getAsJsonObject();
+                    lockdown.put(s.getKey(), new LockdownServer(s.getKey(), values.get("status").getAsBoolean(), values.get("users").getAsJsonArray()));
                 }
 
 
