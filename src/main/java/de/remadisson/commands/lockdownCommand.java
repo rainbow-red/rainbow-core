@@ -12,6 +12,7 @@ import de.remadisson.files;
 import de.remadisson.manager.LockdownServer;
 import net.kyori.adventure.text.TextComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.slf4j.Logger;
 import org.w3c.dom.Text;
 
 import java.util.Map;
@@ -29,8 +30,14 @@ public class lockdownCommand implements Command {
 
     private final String prefix = files.prefix;
 
+    private final ProxyServer server;
+    private final Logger logger;
+
     @Inject
-    ProxyServer server;
+    public lockdownCommand(ProxyServer server, Logger logger){
+        this.server = server;
+        this.logger = logger;
+    }
 
     @Override
     public void execute(CommandSource sender, @NonNull String[] args) {
@@ -131,10 +138,12 @@ public class lockdownCommand implements Command {
             switch(instruction){
                 case "on": {
                     changeLockdown(sender, input, true);
+                    return;
                 }
 
                 case "off": {
                     changeLockdown(sender, input, false);
+                    return;
                 }
 
                 case "remove":
@@ -149,9 +158,54 @@ public class lockdownCommand implements Command {
                     sender.sendMessage(TextComponent.of(prefix + "§cUsage: §e/lockdown add/remove <Global/Server> <Player>"));
                     return;
                 }
+
+                case "list": {
+
+                    // Checking for permissions
+
+                    if(!sender.hasPermission("core.lockdown.playeer") && !sender.hasPermission("core.lockdown.*")){
+                        sender.sendMessage(TextComponent.of(files.message_no_permission));
+                        return;
+                    }
+
+                    sender.sendMessage(TextComponent.of(prefix + "§7This Task is operated async, so it could take a second to finish.."));
+
+                    if(!isServer(input)) {
+                        sender.sendMessage(TextComponent.of(prefix + "§cThe Server §4" + input.toUpperCase() + " §ccould not be found!"));
+                        return;
+                    }
+
+                    files.pool.execute(() -> {
+                        String[] players = {""};
+                        if(!server.getServer(input).isPresent() && !input.equalsIgnoreCase("global")){
+                            sender.sendMessage(TextComponent.of(prefix + "§cThe Server §4" + input.toUpperCase() + " §ccould not be found!"));
+                            return;
+                        }
+                        files.lockdown.get(!input.equalsIgnoreCase("global") ? server.getServer(input).get().getServerInfo().getName() : "global").getUsers().forEach(item -> {
+                            if(players[0] == "") {
+                                players[0] += "§6" + this.getName(UUID.fromString(item.getAsString())) + " §8(§7"+item.getAsString()+"§8)";
+                            } else {
+                                players[0] += "§f, §e" + this.getName(UUID.fromString(item.getAsString())) + " §8(§7"+item.getAsString()+"§8)";;
+                            }
+                        });
+
+                        if(players[0] == ""){
+                            sender.sendMessage(TextComponent.of(prefix + "§cThere are currently no Players for: §e" + input.toUpperCase()));
+                        } else {
+                            sender.sendMessage(TextComponent.of(prefix + "§eThe current Players for §a" + input.toUpperCase() + " §eare:"));
+                            sender.sendMessage(TextComponent.of(prefix + players[0]));
+                        }
+                    });
+
+                    return;
+                }
+
+                default:
+                    sendHelp(sender);
             }
 
         } else if(args.length == 3){
+
             String instruction = args[0].toLowerCase().trim();
             String input = args[1].toLowerCase().trim();
             String input2 = args[2].toLowerCase().trim();
@@ -178,48 +232,59 @@ public class lockdownCommand implements Command {
 
                 case "remove": {
 
+                    // Checking if User exists.
                     if(uuid.toString() == null) {
                         sender.sendMessage(TextComponent.of(prefix + "§cThe Player §4" + input.toUpperCase() + " §cis not availabe!"));
                         return;
                     }
 
+                    // Checking if Server exists.
                     if(!isServer(input)){
                         sender.sendMessage(TextComponent.of(prefix + "§cThe Server §4" + input.toUpperCase() + "§c could not be found!"));
                         return;
                     }
 
+                    // Getting the Lockdown-Server data.
                     LockdownServer ls = files.lockdown.get(input);
 
+                    // Checking if User is already allowed
                     if(!ls.containsUser(uuid)){
                         server.sendMessage(TextComponent.of(prefix + "§cThis User is not allowed on this Server!"));
                         return;
                     }
 
+                    // Removing user from Lockdown-Server
                     ls.removeUser(uuid);
                     sender.sendMessage(TextComponent.of(prefix + "§eThe Player §a" + input2.toUpperCase() + " §eis now §cforbbidden§a to join to §a" + input.toUpperCase()));
-
+                    return;
                 }
                 case "add": {
 
+                    // Checking if User exists.
                     if(uuid.toString() == null) {
                         sender.sendMessage(TextComponent.of(prefix + "§cThe Player §4" + input.toUpperCase() + " §cis not availabe!"));
                         return;
                     }
 
+                    // Checking if Server exists.
                     if(!isServer(input)){
                         sender.sendMessage(TextComponent.of(prefix + "§cThe Server §4" + input.toUpperCase() + "§c could not be found!"));
                         return;
                     }
 
+                    // Getting Lockdown-Server data.
                     LockdownServer ls = files.lockdown.get(input);
 
+                    // Checking if User is already alllowed
                     if(ls.containsUser(uuid)){
                         server.sendMessage(TextComponent.of(prefix + "§cThis User is already allowed on this Server!"));
                         return;
                     }
 
+                    // Adding user to Lockdown-Server
                     ls.addUser(uuid);
                     sender.sendMessage(TextComponent.of(prefix + "§eThe Player §a" + input2.toUpperCase() + " §eis now added to §a" + input.toUpperCase()));
+                    return;
                 }
             }
         }else{
@@ -227,34 +292,77 @@ public class lockdownCommand implements Command {
             sendHelp(sender);
         }
 
+        // Saving the changes.
         LockdownServer.saveLockdownServers(files.lockdown);
     }
 
-    private boolean changeLockdown(CommandSource sender, String input, boolean status) {
-        if(isServer(input)){
-            LockdownServer ls = files.lockdown.get(input);
-            if(ls.getStatus()){
-                sender.sendMessage(TextComponent.of(prefix + "§cThis Server §8(§7" + input.toUpperCase() +") §chas alraedy Lockdown §aactivated!"));
-                return true;
+    /**
+     * Changes Values for the LockdownData
+     * @param sender
+     * @param input
+     * @param status
+     * @return
+     */
+    private void changeLockdown(CommandSource sender, String input, boolean status) {
+        if(isServer(input) && (input.equalsIgnoreCase("global") || server.getServer(input).isPresent())){
+            LockdownServer ls = files.lockdown.get(input.equalsIgnoreCase("global") ? "global" : server.getServer(input).get().getServerInfo().getName());
+            if(status) {
+                if (ls.getStatus()) {
+                    sender.sendMessage(TextComponent.of(prefix + "§cThis Server §8(§7" + input.toUpperCase() + "§8) §chas Lockdown already §aactivated!"));
+                    return;
+                }
+            } else {
+                if(!ls.getStatus()){
+                    sender.sendMessage(TextComponent.of(prefix + "§cThis Server §8(§7" + input.toUpperCase() + "§8) §chas Lockdown already §4deactivated!"));
+                    return;
+                }
             }
             ls.setStatus(status);
 
             sender.sendMessage(TextComponent.of(prefix + "§eThe Server §a" + input.toUpperCase() + (status ? " §eis now in §cLockdown!" : " §eis now §aunlocked!")));
-            server.getServer(input).get().getPlayersConnected().forEach(player -> {
-                if(player.hasPermission("core.lockdown.join")) {
-                    player.disconnect(TextComponent.of("§eYou have been kicked!\n§4This server is now in Lockdown!"));
+
+            if(!input.equalsIgnoreCase("global")) {
+                server.getServer(input).get().getPlayersConnected().forEach(player -> {
+                    if (!player.hasPermission("core.lockdown.join") && !player.hasPermission("core.lockdown.*")) {
+                        player.disconnect(TextComponent.of("§eYou have been kicked!\n§4This server is now under lockdown!"));
+                    }
+                });
+                return;
+            }
+
+            server.getAllPlayers().stream().forEach(player -> {
+                if(!player.hasPermission("core.lockdown.join") && !player.hasPermission("core.lockdown.*")){
+                    player.disconnect(TextComponent.of("§eYou have been kicked!\n§4This server is now under lockdown!"));
                 }
             });
+
         } else {
             sender.sendMessage(TextComponent.of(prefix + "§cThe Server §4" + input.toUpperCase() + " §ccould not be found!"));
         }
-        return false;
     }
 
+    /**
+     * Returns true if the Name is as Server available.
+     * @param name
+     * @return
+     */
     private boolean isServer(String name){
-        return server.getAllServers().stream().map(RegisteredServer::getServerInfo).anyMatch(serverInfo -> name.equalsIgnoreCase(serverInfo.getName()));
+        return server.getAllServers().stream().map(RegisteredServer::getServerInfo).anyMatch(serverInfo -> name.equalsIgnoreCase(serverInfo.getName())) || name.equalsIgnoreCase("global");
     }
 
+    private String getName(UUID uuid){
+        if(server.getPlayer(uuid).isPresent()){
+            return server.getPlayer(uuid).get().getUsername();
+        }
+
+        return MojangAPI.getPlayerProfile(uuid).getName();
+    }
+
+    /**
+     * Returns the UUID or NULL if the User exists.
+     * @param name
+     * @return
+     */
     private UUID getUUID(String name) {
         if(server.getPlayer(name).isPresent()){
             Player target = server.getPlayer(name).get();
@@ -264,6 +372,10 @@ public class lockdownCommand implements Command {
         }
     }
 
+    /**
+     * Sends Help to the User
+     * @param sender
+     */
     private void sendHelp(CommandSource sender){
         // Checking Permission to help
         if(!sender.hasPermission("core.lockdown.*") && sender.hasPermission("core.lockdown.player") && sender.hasPermission("core.lockdown.status") && files.lockdown.entrySet().stream().anyMatch(entry -> !sender.hasPermission("core.lockdown." + entry.getKey()))){
@@ -291,6 +403,11 @@ public class lockdownCommand implements Command {
         }
     }
 
+    /**
+     * Returns the Servers, that are needed for certain actions.
+     * @param sender
+     * @return
+     */
     private String allowedServers(CommandSource sender) {
         final String[] servers = {""};
         files.lockdown.entrySet().stream().forEach(entry -> {
@@ -300,9 +417,9 @@ public class lockdownCommand implements Command {
                     servers[0] = cap;
                 } else {
                     if(entry.getValue().getStatus()) {
-                        servers[0] += "§r, " + cap;
+                        servers[0] = cap + "§r, " + servers[0];
                     } else {
-                        servers[0] = cap + "§r," + servers[0];
+                        servers[0] += "§r, " + cap;
                     }
                 }
             }

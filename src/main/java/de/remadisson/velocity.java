@@ -8,6 +8,7 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginManager;
 import com.velocitypowered.api.proxy.ProxyServer;
 import de.remadisson.commands.lockdownCommand;
+import de.remadisson.manager.JoinListener;
 import org.slf4j.Logger;
 
 @Plugin(
@@ -49,8 +50,9 @@ public class velocity {
 
         // Registering Commands
         final CommandManager cm = server.getCommandManager();
-        cm.register(new lockdownCommand(), "lockdown");
+        cm.register(new lockdownCommand(server, logger), "lockdown");
 
+        server.getEventManager().register(this, new JoinListener());
         // Sending a Message to Console
         logger.info((prefix + "§2Rainbow-Core has successfully been started!"));
 

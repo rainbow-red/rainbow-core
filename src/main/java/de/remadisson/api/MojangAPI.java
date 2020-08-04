@@ -1,7 +1,9 @@
 package de.remadisson.api;
 
+import com.velocitypowered.api.util.UuidUtils;
 import de.remadisson.mojang.JsonUtils;
 import de.remadisson.mojang.PlayerProfile;
+import org.bson.codecs.UuidCodec;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -20,7 +22,7 @@ public class MojangAPI {
     public static PlayerProfile getPlayerProfile(String name){
         HashMap<String, String> values = JsonUtils.getPlayerInJson(name);
         try {
-            return new PlayerProfile(values.get("name"), UUID.fromString(values.get("id")));
+            return new PlayerProfile(values.get("name"), UUID.fromString(values.get("id").contains("-") ? values.get("id") : UuidUtils.fromUndashed(values.get("id")).toString()));
         }catch(NullPointerException ex){
             return null;
         }

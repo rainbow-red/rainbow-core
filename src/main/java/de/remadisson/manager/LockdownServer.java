@@ -6,7 +6,6 @@ import com.google.gson.JsonParser;
 import de.remadisson.files;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -71,6 +70,7 @@ public class LockdownServer {
             lockdowndetails.addProperty("status", v.getStatus());
             lockdowndetails.add("users", users);
             lockdownedServers.add(k,lockdowndetails);
+
         });
 
         try {

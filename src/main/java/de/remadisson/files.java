@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class files {
 
@@ -27,6 +29,8 @@ public class files {
     public static final String debug = "§8[§dDEBUG§8] " + console;
 
     public static final String message_no_permission = prefix + "§cYou have no permission to perform this command!";
+
+    public static ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
     // Saving Files with their context (JSON)
     public static ArrayList<FileAPI> files = new ArrayList<>();
