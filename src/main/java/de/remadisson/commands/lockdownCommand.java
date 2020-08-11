@@ -163,7 +163,7 @@ public class lockdownCommand implements Command {
 
                     // Checking for permissions
 
-                    if(!sender.hasPermission("core.lockdown.playeer") && !sender.hasPermission("core.lockdown.*")){
+                    if(!sender.hasPermission("core.lockdown.player") && !sender.hasPermission("core.lockdown.*")){
                         sender.sendMessage(TextComponent.of(files.message_no_permission));
                         return;
                     }
@@ -181,7 +181,8 @@ public class lockdownCommand implements Command {
                             sender.sendMessage(TextComponent.of(prefix + "§cThe Server §4" + input.toUpperCase() + " §ccould not be found!"));
                             return;
                         }
-                        files.lockdown.get(!input.equalsIgnoreCase("global") ? server.getServer(input).get().getServerInfo().getName() : "global").getUsers().forEach(item -> {
+
+                        files.lockdown.get(input).getUsers().forEach(item -> {
                             if(players[0] == "") {
                                 players[0] += "§6" + this.getName(UUID.fromString(item.getAsString())) + " §8(§7"+item.getAsString()+"§8)";
                             } else {
@@ -305,7 +306,7 @@ public class lockdownCommand implements Command {
      */
     private void changeLockdown(CommandSource sender, String input, boolean status) {
         if(isServer(input) && (input.equalsIgnoreCase("global") || server.getServer(input).isPresent())){
-            LockdownServer ls = files.lockdown.get(input.equalsIgnoreCase("global") ? "global" : server.getServer(input).get().getServerInfo().getName());
+            LockdownServer ls = files.lockdown.get(input);
             if(status) {
                 if (ls.getStatus()) {
                     sender.sendMessage(TextComponent.of(prefix + "§cThis Server §8(§7" + input.toUpperCase() + "§8) §chas Lockdown already §aactivated!"));
@@ -410,7 +411,7 @@ public class lockdownCommand implements Command {
      */
     private String allowedServers(CommandSource sender) {
         final String[] servers = {""};
-        files.lockdown.entrySet().stream().forEach(entry -> {
+        files.lockdown.entrySet().forEach(entry -> {
             if(sender.hasPermission("core.lockdown." + entry.getKey().toLowerCase()) || sender.hasPermission("core.lockdown.*")){
                 String cap = (entry.getValue().getStatus() ? "§c" : "§a") + entry.getKey().substring(0,1).toUpperCase() + entry.getKey().substring(1);
                 if(servers[0] == ""){

@@ -2,13 +2,17 @@ package de.remadisson.db.instances;
 
 public class Value {
 
-    private String key;
-    private Object value;
+    private final String table;
+    private final String key;
+    private final Object value;
 
-    public Value(String key, Object value){
+    public Value(String table, String key, Object value){
+        this.table = table;
         this.key = key;
         this.value = value;
     }
+
+    public String getTable() { return table; }
 
     public String getKey(){
         return key;

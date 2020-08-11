@@ -61,7 +61,7 @@ public class files {
                 lockdownedServers.add("global", lockdowndetails);
 
                 for (RegisteredServer servers : server.getAllServers()) {
-                    lockdownedServers.add(servers.getServerInfo().getName(), lockdowndetails);
+                    lockdownedServers.add(servers.getServerInfo().getName().toLowerCase(), lockdowndetails);
                 }
 
                 config.add("lockdown", lockdownedServers).save();

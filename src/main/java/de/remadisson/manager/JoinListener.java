@@ -18,7 +18,7 @@ public class JoinListener {
             }
         }
 
-        if(files.lockdown.get(e.getOriginalServer().getServerInfo().getName()).getStatus()){
+        if(files.lockdown.get(e.getOriginalServer().getServerInfo().getName().toLowerCase()).getStatus()){
             if(!player.hasPermission("core.lockdown.join") && !player.hasPermission("core.lockdown.*")){
                 player.disconnect(TextComponent.of("§cRainbow§8-§4LOCKDOWN\n§eThe RainbowRed-Network is currently under lockdown.\n§eWe give our best, to have best results!\n\n§bTwitter§f§b @RainbowRedNet for Updates!"));
                 e.setResult(ServerPreConnectEvent.ServerResult.denied());

@@ -1,4 +1,4 @@
 package de.remadisson.api;
 
-public class UserLayoutAPI {
+public class UserInitialsAPI {
 }

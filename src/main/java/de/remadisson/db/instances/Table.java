@@ -1,8 +1,5 @@
 package de.remadisson.db.instances;
 
-import de.remadisson.db.instances.Column;
-import de.remadisson.db.instances.Index;
-
 import java.util.Arrays;
 
 public class Table {

@@ -20,43 +20,31 @@ public class MySQL {
         this.database = database;
     }
 
-    public Connection connect(){
+    public Connection connect() throws ClassNotFoundException, SQLException, NullPointerException {
         Connection con = null;
         if (!isConnected()) {
-            try {
-                Class.forName("com.mysql.jdbc.Driver");
-                con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database + "?autoReconnect=true", user, password);
-            } catch (ClassNotFoundException | SQLException ex) {
-                ex.printStackTrace();
-            }
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database + "?autoReconnect=true", user, password);
         }
 
         return con;
     }
 
-    public MySQL disconnect(){
+    public MySQL disconnect() throws SQLException, NullPointerException{
         if (isConnected()) {
-            try {
                 con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
+
         return this;
     }
 
-    public boolean isConnected(){
-        try {
-            if(!con.isClosed()) {
-                return query("SELECT 1") != null;
-            } else {
-                return false;
-            }
-        } catch (NullPointerException | SQLException ex) {
+    public boolean isConnected() throws SQLException, NullPointerException {
+        if (!con.isClosed()) {
+            return query("SELECT 1") != null;
+        } else {
             return false;
         }
     }
-
     public MySQL update(String query) throws SQLException {
             PreparedStatement s = con.prepareStatement(query);
             s.executeUpdate();
@@ -71,7 +59,7 @@ public class MySQL {
             return rs;
     }
 
-    public void reconnect(){
+    public void reconnect() throws SQLException, ClassNotFoundException, NullPointerException{
         if (isConnected()) {
             disconnect();
         }
