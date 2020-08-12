@@ -7,21 +7,23 @@ Description: <br>
 
 -[x] FileAPI - Usable for every other Velocity-Plugin | Creates new Files to read and write [Priority: HIGH] <br>
 -[x] MojangAPI - Returns the PlayerProfile of an aksed Player (UUID, NAME) <br>
--[x] DatabaseAPI - Provides methods to connect, insert and read data from the database. [Priority: HIGH]<br>
--[ ] UserInitialsAPI - Getting Prefix, Suffix, Color from the User. (Data set and read (directly) by LuckPerms) [Priority: MID]<br>
+-[x] DatabaseAPI - Provides methods to connect, insert and read data from the database. [Priority: HIGH] (UNTESTED) <br>
+-[x] UserInitialsAPI - Getting Prefix, Suffix, Color from the User. [Priority: MID] (UNTESTED)<br>
+-[ ] UserDataAPI - Provides methods to save/read User Data in an easier way!
 
 <br>
-
+<!--
 ### Addons
 
 | Addon  	            | Description                                                         	|
 |---	                                |---                                                	|
-| ```UserManagerAPI``` 	|  Provides methods to save userData in an easier way! 	                |
+| ```/``` 	| /              |
 
 <br>
+-->
 
 #### Commands
 
 | Command  	                            | Description  	                                        |
 |---	                                |---                                                	|
-| ```lockdown <on/off/add/remove>``` 	|  Prevents unallowed users from joining the Network. 	|
+| ```lockdown <on/off/add/remove>``` 	|  Prevents disallowed users from joining the Network. 	|

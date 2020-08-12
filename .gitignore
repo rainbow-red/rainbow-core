@@ -111,3 +111,8 @@ buildNumber.properties
 
 # Common working directory
 run/
+
+
+# TO PREVENT DISALLOWED LOGIN TRIES AT ON OUR DATABASE
+src/main/java/de/remadisson/rainbowcore/mojang/login.java
+
