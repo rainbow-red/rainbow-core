@@ -1,5 +1,8 @@
 package de.remadisson.rainbowcore.db;
 
+import de.remadisson.rainbowcore.files;
+
+import javax.sound.midi.Soundbank;
 import java.sql.*;
 
 public class MySQL {
@@ -12,7 +15,7 @@ public class MySQL {
 
     private Connection con;
 
-    public MySQL(String host, int port, String user, String password, String database){
+    public MySQL(String host, int port, String user, String password, String database) {
         this.host = host;
         this.port = port;
         this.user = user;
@@ -20,46 +23,64 @@ public class MySQL {
         this.database = database;
     }
 
-    public Connection connect() throws ClassNotFoundException, SQLException, NullPointerException {
+    public Connection connect() throws SQLException, NullPointerException {
         Connection con = null;
         if (!isConnected()) {
-            Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database + "?autoReconnect=true", user, password);
+            con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database + "?autoReconnect=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", user, password);
+            System.out.println(files.console + "MySQL-Connection established!");
         }
 
         return con;
     }
 
-    public MySQL disconnect() throws SQLException, NullPointerException{
+    public MySQL disconnect() throws SQLException, NullPointerException {
         if (isConnected()) {
-                con.close();
+            con.close();
         }
 
         return this;
     }
 
-    public boolean isConnected() throws SQLException, NullPointerException {
-        if (!con.isClosed()) {
-            return query("SELECT 1") != null;
+    public boolean isConnected() throws SQLException {
+        if (con != null && !con.isClosed()) {
+            return con.isValid(30*60*1000);
         } else {
             return false;
         }
     }
+
     public MySQL update(String query) throws SQLException {
-            PreparedStatement s = con.prepareStatement(query);
-            s.executeUpdate();
-            s.close();
+        if (!isConnected()) {
+            try {
+                reconnect();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        PreparedStatement s = con.prepareStatement(query);
+        s.executeUpdate();
+        s.close();
         return this;
     }
 
-    public ResultSet query(String query) throws SQLException{
-            PreparedStatement ps = con.prepareStatement(query);
-            ps.executeQuery();
-            ResultSet rs = ps.getResultSet();
-            return rs;
+    public ResultSet query(String query) throws SQLException {
+
+        if (!isConnected()) {
+            try {
+                reconnect();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        PreparedStatement ps = con.prepareStatement(query);
+        ps.executeQuery();
+        ResultSet rs = ps.getResultSet();
+        return rs;
     }
 
-    public void reconnect() throws SQLException, ClassNotFoundException, NullPointerException{
+    public void reconnect() throws SQLException, ClassNotFoundException, NullPointerException {
         if (isConnected()) {
             disconnect();
         }

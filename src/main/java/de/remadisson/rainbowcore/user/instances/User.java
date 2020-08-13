@@ -1,7 +1,10 @@
 package de.remadisson.rainbowcore.user.instances;
 
+import de.remadisson.rainbowcore.api.DataBaseAPI;
 import de.remadisson.rainbowcore.api.MojangAPI;
+import de.remadisson.rainbowcore.sql.Database;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class User {
@@ -20,7 +23,6 @@ public class User {
         username = MojangAPI.getPlayerProfile(uuid).getName();
     }
 
-
     public UUID getUUID(){
         return uuid;
     }
@@ -29,22 +31,12 @@ public class User {
         return username;
     }
 
-
-    public UserSettings loadUserSettings(){
-        // TODO LAOD USER SETTINGS
-        return null;
-    }
-
-    public void saveUserSettings(UserSettings settings){
-        // TODO SAVE USER SETTINGS
-    }
-
-    public UserSettings getSettings(){
+    public UserSettings getSettings() throws SQLException {
         if(settings == null){
-            return loadUserSettings();
-        } else {
-            return settings;
+           settings = Database.getUserSettings(uuid);
         }
+            return settings;
+
     }
 
 }

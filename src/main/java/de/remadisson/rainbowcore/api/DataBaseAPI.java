@@ -62,8 +62,8 @@ public class DataBaseAPI {
      * @throws SQLException
      * @throws NullPointerException
      */
-    public boolean valueExists(String tableName, String key, String value) throws SQLException, NullPointerException{
-        ResultSet rs = mysql.query("SELECT * FROM '"+ tableName +"' WHERE " + key + " LIKE '" + value + "'");
+    public boolean valueExists(String tableName, String key, Object value) throws SQLException, NullPointerException {
+        ResultSet rs = mysql.query("SELECT * FROM '"+ tableName +"' WHERE " + key + " LIKE '" + value.toString() + "'");
 
         // Gets the next line from the table
         if(rs.next()){
@@ -80,7 +80,7 @@ public class DataBaseAPI {
      * @param table
      * @throws SQLException
      */
-    public void createTable(Table table) throws SQLException{
+    public void createTable(Table table) throws SQLException {
         mysql.update(table.getCreateTableString());
     }
 
@@ -89,7 +89,7 @@ public class DataBaseAPI {
      * @param tableName
      * @throws SQLException
      */
-    public void dropTable(String tableName) throws SQLException{
+    public void dropTable(String tableName) throws SQLException {
         mysql.update("DROP TABLE ` " + tableName + " `");
     }
 
@@ -97,18 +97,29 @@ public class DataBaseAPI {
      * Inserts a Single Value
      * @param value
      */
-    public void insertValue(Value value) throws SQLException{
-        mysql.update("INSERT INTO `" + value.getTable() + "`('"+ value.getKey() +"') VALUES ('" + value.getValue() + "')" );
+    public void insertValue(String tablename, Value value) throws SQLException {
+        mysql.update("INSERT INTO `" + tablename + "`('"+ value.getKey() +"') VALUES ('" + value.getValue() + "')" );
     }
 
     /**
      * Inserts a List of Values
      * @param valueList
      */
-    public void insertValues(ArrayList<Value> valueList) throws SQLException{
-        for(Value value : valueList){
-            insertValue(value);
-        }
+    public void insertValues(String tablename, ArrayList<Value> valueList) throws SQLException {
+      String sql = "INSERT INTO `tablename` ";
+      String keys = "(" + valueList.get(0).getKey();
+      String values = ") VALUES ("  + valueList.get(0).getValue();
+
+      for(Value value : valueList){
+          if(value != valueList.get(0)){
+
+              keys += " , "  + value.getKey();
+              values += " , " + value.getValue();
+
+          }
+      }
+      sql += keys + values + ")";
+        mysql.update(sql);
     }
 
     /**
@@ -117,6 +128,26 @@ public class DataBaseAPI {
      */
     public void updateValue(UpdateValue value) throws SQLException{
         mysql.update("UPDATE `" + value.getTable() + "` SET `"+value.getKey()+"`='"+value.getValue()+"' WHERE `" + value.getIDKey() + "` LIKE '" + value.getIDValue() + "'");
+    }
+
+    /**
+     * Updates multiple Values at once
+     * @param tablename
+     * @param idkey
+     * @param idvalue
+     * @param valueList
+     */
+    public void updateValues(String tablename, String idkey, Object idvalue, ArrayList<Value> valueList){
+        String sql = "UPDATE `" + tablename + "` SET `" + valueList.get(0).getKey()+ "`='" + valueList.get(0).getValue() + "' ";
+
+        for(Value value : valueList){
+            if(value != valueList.get(0)){
+
+                sql += " , " + valueList.get(0).getKey()+ "`='" + valueList.get(0).getValue() + "' ";
+
+            }
+        }
+        sql += " WHERE `" + idkey + "` LIKE '" + idvalue.toString() + "'" ;
     }
 
     /**
@@ -149,7 +180,7 @@ public class DataBaseAPI {
         if(rs.next()) {
             Value[] values = {null};
             for(int columnIndex = 0; columnIndex < rs.getMetaData().getColumnCount(); columnIndex++){
-                values[columnIndex] = new Value(TableName, rs.getMetaData().getColumnName(columnIndex), rs.getObject(columnIndex));
+                values[columnIndex] = new Value(rs.getMetaData().getColumnName(columnIndex), rs.getObject(columnIndex));
             } // END OF FOR LOOP
 
             return new EntryRow(TableName, rs.getRow(), idKey, idValue, values);

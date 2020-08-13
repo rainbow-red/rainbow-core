@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class UserDataAPI {
 
-    private static HashMap<UUID, User> cachedUsers = new HashMap<>();
+    private final static HashMap<UUID, User> cachedUsers = new HashMap<>();
 
     public UserDataAPI() {}
 
@@ -16,20 +16,8 @@ public class UserDataAPI {
         return cachedUsers;
     }
 
-    public User loadUser(UUID uuid){
-        // TODO LOAD USER :^)
-
-        return null;
-    }
-
-    public void saveUser(User user){
-        files.pool.execute(() -> {
-            // TODO SAVE USER
-        });
-    }
-
-    public boolean isLoaded(User user){
-        return getloadedUsers().get(user.getUUID()) != null;
+    public boolean isLoaded(UUID uuid){
+        return getloadedUsers().get(uuid) != null;
     }
 
 

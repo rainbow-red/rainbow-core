@@ -1,5 +1,6 @@
 package de.remadisson.rainbowcore.user.instances;
 
+import com.google.gson.JsonObject;
 import de.remadisson.rainbowcore.user.enums.UserTablist;
 
 import java.util.Date;
@@ -7,11 +8,11 @@ import java.util.Date;
 public class UserSettings {
 
     private UserTablist tablist;
-    private Date lastOnline;
+    private String lastOnline;
 
-    public UserSettings(UserTablist tablist){
+    public UserSettings(UserTablist tablist, String lastOnline){
         this.tablist = tablist;
-        lastOnline = new Date();
+        this.lastOnline = lastOnline;
     }
 
     public void setTablist(UserTablist list){
@@ -26,12 +27,22 @@ public class UserSettings {
         return tablist.getHeaderAndFooter();
     }
 
-    public Date getLastOnline(){
+    public String getLastOnline(){
         return lastOnline;
     }
 
     public void updateLastOnline(){
-        lastOnline = new Date();
+        lastOnline = new Date().toString();
     }
 
+    public String getJSONString(){
+        JsonObject object = new JsonObject();
+        object.addProperty("tablist", tablist.name());
+
+        return object.getAsString();
+    }
+
+    public static User fromJSONtoUser(){
+        return null;
+    }
 }

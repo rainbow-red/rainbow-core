@@ -9,7 +9,11 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import de.remadisson.rainbowcore.commands.lockdownCommand;
 import de.remadisson.rainbowcore.manager.JoinListener;
 import de.remadisson.rainbowcore.manager.ServerPingListener;
+import de.remadisson.rainbowcore.sql.Database;
 import org.slf4j.Logger;
+
+import javax.xml.crypto.Data;
+import java.sql.SQLException;
 
 @Plugin(
         id = "rainbowcore",
@@ -37,9 +41,6 @@ public class velocity {
         // Sending a Message to Console
         logger.info((prefix + "§aRainbow-Core is now starting!"));
 
-        //Creating new Lockdown JSON-File
-        files.loadLockdownFile(logger, server);
-
     }
 
     @Subscribe
@@ -47,6 +48,19 @@ public class velocity {
         /*
          * Executed after finishing!
          */
+
+        files.pool.execute(() -> {
+            try {
+                Database.mysql = Database.DatabaseConnect();
+            } catch (SQLException | ClassNotFoundException throwables) {
+                throwables.printStackTrace();
+            }
+        });
+
+
+
+        //Creating new Lockdown JSON-File
+        files.loadLockdownFile(logger, server);
 
         // Registering Commands
         final CommandManager cm = server.getCommandManager();

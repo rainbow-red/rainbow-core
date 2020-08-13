@@ -31,6 +31,14 @@ public class Column {
     public boolean isNullable() { return nullable; }
 
     public String getColumn(){
-        return " `" + name + "` " + getType() + "("+length+")" + (nullable ? " NULL " : " NOT NULL ");
+
+        switch(type){
+            case DATE:
+                return " `" + name + "` " + getType() + (nullable ? " NULL " : " NOT NULL ");
+
+            default:
+                return " `" + name + "` " + getType() + "("+length+")" + (nullable ? " NULL " : " NOT NULL ");
+        }
+
     }
 }
