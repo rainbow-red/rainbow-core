@@ -36,6 +36,7 @@ public class User {
     }
 
     public void saveUserSettings(UserSettings settings){
+        // TODO SAVE USER SETTINGS
     }
 
     public UserSettings getSettings(){

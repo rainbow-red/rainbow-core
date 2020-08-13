@@ -114,5 +114,5 @@ run/
 
 
 # TO PREVENT DISALLOWED LOGIN TRIES AT ON OUR DATABASE
-src/main/java/de/remadisson/rainbowcore/mojang/login.java
+src/main/java/de/remadisson/rainbowcore/sql/login.java
 
