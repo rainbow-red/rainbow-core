@@ -10,6 +10,7 @@ import de.remadisson.rainbowcore.commands.lockdownCommand;
 import de.remadisson.rainbowcore.manager.JoinListener;
 import de.remadisson.rainbowcore.manager.ServerPingListener;
 import de.remadisson.rainbowcore.sql.Database;
+import de.remadisson.rainbowcore.user.UserAutoUnload;
 import org.slf4j.Logger;
 
 import javax.xml.crypto.Data;
@@ -29,10 +30,13 @@ public class velocity {
     private Logger logger;
     private ProxyServer server;
 
+    public static velocity plugin;
+
     @Inject
     public velocity(ProxyServer server, Logger logger) {
         this.server = server;
         this.logger = logger;
+        plugin = this;
 
         /*
          *  Executed while loading
@@ -68,8 +72,17 @@ public class velocity {
 
         server.getEventManager().register(this, new JoinListener(server));
         server.getEventManager().register(this, new ServerPingListener(server));
+
+        // Enabling User Save and auto unload
+        UserAutoUnload.UserUpdateAndUnload(server);
+
         // Sending a Message to Console
         logger.info((prefix + "§2Rainbow-Core has successfully been started!"));
 
     }
+
+    public static velocity getInstance(){
+        return plugin;
+    }
+
 }

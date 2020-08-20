@@ -39,10 +39,7 @@ public class UserSettings {
         JsonObject object = new JsonObject();
         object.addProperty("tablist", tablist.name());
 
-        return object.getAsString();
+        return object.toString();
     }
 
-    public static User fromJSONtoUser(){
-        return null;
-    }
 }

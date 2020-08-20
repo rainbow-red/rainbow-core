@@ -2,16 +2,22 @@ package de.remadisson.rainbowcore.manager;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import de.remadisson.rainbowcore.api.DataBaseAPI;
 import de.remadisson.rainbowcore.api.UserDataAPI;
 import de.remadisson.rainbowcore.files;
+import de.remadisson.rainbowcore.sql.Database;
 import de.remadisson.rainbowcore.user.instances.User;
 import net.kyori.text.TextComponent;
 
+import javax.xml.crypto.Data;
+import java.sql.SQLException;
+import java.util.Map;
 import java.util.UUID;
 
 public class JoinListener {
@@ -42,32 +48,54 @@ public class JoinListener {
     }
 
     @Subscribe
+    public void DisconnectEvent(DisconnectEvent e){
+        UserDataAPI api = new UserDataAPI();
+        files.pool.execute(() -> {
+        for(Map.Entry<UUID, User> entry : api.getloadedUsers().entrySet()){
+            try {
+                Database.saveUser(entry.getValue());
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+        });
+    }
+
+    @Subscribe
     public void LoginEvent(LoginEvent e){
         Player player = e.getPlayer();
         UUID uuid = e.getPlayer().getUniqueId();
         UserDataAPI api = new UserDataAPI();
-        if(api.isLoaded(player.getUniqueId())){
-            return;
-        }
 
         files.pool.execute(() -> {
-            api.getloadedUsers().put(uuid, new User(uuid));
+           if(!api.isLoaded(player.getUniqueId())) {
+               api.getloadedUsers().put(uuid, new User(uuid));
+           }
+            applyHeaderAndFooter(player);
         });
 
-        applyHeaderAndFooter(player);
+
     }
 
     @Subscribe
     public void onPostServerConnect(ServerPostConnectEvent e){
-        if(e.getPreviousServer() != e.getPlayer().getCurrentServer().get()){
-            applyHeaderAndFooter(e.getPlayer());
-        }
+        files.pool.execute(() -> {
+            if(e.getPreviousServer() != e.getPlayer().getCurrentServer().get()){
+                applyHeaderAndFooter(e.getPlayer());
+            }
+        });
     }
 
-    public void applyHeaderAndFooter(Player p){
+    public void applyHeaderAndFooter(Player p) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         int max_player_count = 100;
         String temp_header = "§e§l« §eRainbowRED §e§l» \n §7Welcome " + p.getUsername() + " \n §a§7You play on §b" + p.getCurrentServer().get().getServerInfo().getName() + " \n";
-        String temp_footer = "\n §e " + proxyServer.getPlayerCount() + " §7/§e" + max_player_count + "§7 Players are online! \n §9Discord§7: §9remady.me/dc \n §bTwitter§7: §bRainbowNetwork";
+        String temp_footer = "\n §e " + proxyServer.getPlayerCount() + "§7/§e" + max_player_count + "§7 Players are online! \n §9Discord§7: §9remady.me/dc \n §bTwitter§7: §bRainbowNetwork";
         p.setHeaderAndFooter(TextComponent.of(temp_header), TextComponent.of(temp_footer));
     }
 

@@ -63,7 +63,7 @@ public class DataBaseAPI {
      * @throws NullPointerException
      */
     public boolean valueExists(String tableName, String key, Object value) throws SQLException, NullPointerException {
-        ResultSet rs = mysql.query("SELECT * FROM '"+ tableName +"' WHERE " + key + " LIKE '" + value.toString() + "'");
+        ResultSet rs = mysql.query("SELECT * FROM `"+ tableName +"` WHERE `" + key + "` LIKE '" + value.toString() + "'");
 
         // Gets the next line from the table
         if(rs.next()){
@@ -98,7 +98,7 @@ public class DataBaseAPI {
      * @param value
      */
     public void insertValue(String tablename, Value value) throws SQLException {
-        mysql.update("INSERT INTO `" + tablename + "`('"+ value.getKey() +"') VALUES ('" + value.getValue() + "')" );
+        mysql.update("INSERT INTO `" + tablename + "` ('"+ value.getKey() +"') VALUES ('" + value.getValue() + "')" );
     }
 
     /**
@@ -106,20 +106,21 @@ public class DataBaseAPI {
      * @param valueList
      */
     public void insertValues(String tablename, ArrayList<Value> valueList) throws SQLException {
-      String sql = "INSERT INTO `tablename` ";
-      String keys = "(" + valueList.get(0).getKey();
-      String values = ") VALUES ("  + valueList.get(0).getValue();
+      String sql = "INSERT INTO `" + tablename + "` ";
+      String keys = "( '" + valueList.get(0).getKey() + "'";
+      String values = ") VALUES ('"  + valueList.get(0).getValue() + "'";
 
       for(Value value : valueList){
           if(value != valueList.get(0)){
 
-              keys += " , "  + value.getKey();
-              values += " , " + value.getValue();
+              keys += " , '"  + value.getKey() + "'";
+              values += " , '" + value.getValue() + "'";
 
           }
       }
+      // Add values to the SQL-Syntax
       sql += keys + values + ")";
-        mysql.update(sql);
+      mysql.update(sql);
     }
 
     /**
@@ -143,7 +144,7 @@ public class DataBaseAPI {
         for(Value value : valueList){
             if(value != valueList.get(0)){
 
-                sql += " , " + valueList.get(0).getKey()+ "`='" + valueList.get(0).getValue() + "' ";
+                sql += " , `" + valueList.get(0).getKey()+ "`='" + valueList.get(0).getValue() + "' ";
 
             }
         }
