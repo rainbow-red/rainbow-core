@@ -8,14 +8,12 @@ import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import de.remadisson.rainbowcore.api.DataBaseAPI;
 import de.remadisson.rainbowcore.api.UserDataAPI;
 import de.remadisson.rainbowcore.files;
 import de.remadisson.rainbowcore.sql.Database;
 import de.remadisson.rainbowcore.user.instances.User;
 import net.kyori.text.TextComponent;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
@@ -70,6 +68,12 @@ public class JoinListener {
         files.pool.execute(() -> {
            if(!api.isLoaded(player.getUniqueId())) {
                api.getloadedUsers().put(uuid, new User(uuid));
+               System.out.println(files.debug + player.getUsername() + " is now loaded!");
+               try {
+                   System.out.println(api.getUser(player.getUniqueId()).getSettings());
+               } catch (SQLException throwables) {
+                   throwables.printStackTrace();
+               }
            }
             applyHeaderAndFooter(player);
         });

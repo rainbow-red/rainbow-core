@@ -26,8 +26,13 @@ public class MySQL {
     public Connection connect() throws SQLException, NullPointerException {
         Connection con = null;
         if (!isConnected()) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
             con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database + "?autoReconnect=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", user, password);
-            System.out.println(files.console + "MySQL-Connection established!");
+
         }
 
         return con;

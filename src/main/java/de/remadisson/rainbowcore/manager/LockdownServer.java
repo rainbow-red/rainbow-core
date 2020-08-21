@@ -70,7 +70,6 @@ public class LockdownServer {
             lockdowndetails.addProperty("status", v.getStatus());
             lockdowndetails.add("users", users);
             lockdownedServers.add(k,lockdowndetails);
-
         });
 
         try {

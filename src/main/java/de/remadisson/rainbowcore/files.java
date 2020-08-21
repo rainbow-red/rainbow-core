@@ -52,7 +52,6 @@ public class files {
 
         try {
             if(!config.contains("lockdown")) {
-
                 // Adding Servers to an JSON
                 JsonObject lockdownedServers = new JsonObject();
                 JsonObject lockdowndetails = new JsonObject();

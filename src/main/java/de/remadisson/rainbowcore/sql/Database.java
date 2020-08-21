@@ -1,5 +1,7 @@
 package de.remadisson.rainbowcore.sql;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import de.remadisson.rainbowcore.api.DataBaseAPI;
 import de.remadisson.rainbowcore.api.MojangAPI;
 import de.remadisson.rainbowcore.db.MySQL;
@@ -31,7 +33,7 @@ public class Database {
 
     public static void createTable(MySQL mysql) throws SQLException {
         Table table = new Table(tablename, new Index("uuid", ColumnIndex.UNIQUE), false, new Column("uuid", ColumnType.VARCHAR, 250, false),
-                new Column("name", ColumnType.VARCHAR, 20, false), new Column("settings", ColumnType.TEXT, 1200, false), new Column("lastonline", ColumnType.DATE, 30, false));
+                new Column("name", ColumnType.VARCHAR, 20, false), new Column("settings", ColumnType.TEXT, 1200, false), new Column("lastonline", ColumnType.TEXT, 30, false));
 
         DataBaseAPI api = new DataBaseAPI(mysql);
         api.createTable(table);
@@ -45,7 +47,7 @@ public class Database {
     public static void saveUser(User user) throws SQLException {
         DataBaseAPI api = new DataBaseAPI(mysql);
         if(!userExists(user.getUUID())){
-            api.insertValues(tablename, new ArrayList<Value>(Arrays.asList(new Value("settings", user.getSettings().getJSONString()), new Value("lastOnline", user.getSettings().getLastOnline()))));
+            api.insertValues(tablename, new ArrayList<Value>(Arrays.asList(new Value("uuid", user.getUUID()) , new Value("name", user.getUsername()) ,new Value("settings", user.getSettings().getJSONString()), new Value("lastOnline", user.getSettings().getLastOnline()))));
         } else {
             api.updateValues(tablename, "uuid", user.getUUID(),  new ArrayList<Value>(Arrays.asList(new Value("settings", user.getSettings().getJSONString()), new Value("lastOnline", user.getSettings().getLastOnline()))));
         }
@@ -61,7 +63,7 @@ public class Database {
             final String[] lastOnline = {new Date().toString()};
             Arrays.stream(er.getValues()).forEach(value -> {
                 if (value.getKey().equalsIgnoreCase("settings")) {
-                    tablist[0] = UserTablist.valueOf(value.getValue());
+                    tablist[0] = UserTablist.valueOf(JsonParser.parseString(value.getValue()).getAsJsonObject().get("tablist").toString().replaceAll("\"", ""));
                 } else if (value.getKey().equalsIgnoreCase("lastOnline")) {
                     lastOnline[0] = value.getValue();
                 }

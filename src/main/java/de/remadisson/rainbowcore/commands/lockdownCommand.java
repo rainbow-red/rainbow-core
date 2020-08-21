@@ -135,12 +135,12 @@ public class lockdownCommand implements Command {
             switch(instruction){
                 case "on": {
                     changeLockdown(sender, input, true);
-                    return;
+                    break;
                 }
 
                 case "off": {
                     changeLockdown(sender, input, false);
-                    return;
+                    break;
                 }
 
                 case "remove":
@@ -254,7 +254,8 @@ public class lockdownCommand implements Command {
                     // Removing user from Lockdown-Server
                     ls.removeUser(uuid);
                     sender.sendMessage(TextComponent.of(prefix + "§eThe Player §a" + input2.toUpperCase() + " §eis now §cforbbidden§a to join to §a" + input.toUpperCase()));
-                    return;
+                    break;
+
                 }
                 case "add": {
 
@@ -282,7 +283,7 @@ public class lockdownCommand implements Command {
                     // Adding user to Lockdown-Server
                     ls.addUser(uuid);
                     sender.sendMessage(TextComponent.of(prefix + "§eThe Player §a" + input2.toUpperCase() + " §eis now added to §a" + input.toUpperCase()));
-                    return;
+                    break;
                 }
             }
         }else{

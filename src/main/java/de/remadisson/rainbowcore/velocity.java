@@ -4,17 +4,22 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import de.remadisson.rainbowcore.api.UserDataAPI;
 import de.remadisson.rainbowcore.commands.lockdownCommand;
 import de.remadisson.rainbowcore.manager.JoinListener;
 import de.remadisson.rainbowcore.manager.ServerPingListener;
 import de.remadisson.rainbowcore.sql.Database;
 import de.remadisson.rainbowcore.user.UserAutoUnload;
+import de.remadisson.rainbowcore.user.instances.User;
 import org.slf4j.Logger;
 
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.UUID;
 
 @Plugin(
         id = "rainbowcore",
@@ -79,6 +84,21 @@ public class velocity {
         // Sending a Message to Console
         logger.info((prefix + "§2Rainbow-Core has successfully been started!"));
 
+    }
+
+    @Subscribe
+    public void onProxyShutdown(ProxyShutdownEvent e){
+        UserDataAPI api = new UserDataAPI();
+        int savedUsers = 0;
+        for(Map.Entry<UUID, User> entry : api.getloadedUsers().entrySet()){
+            System.out.println(entry.getValue().getUsername());
+            try {
+                    Database.saveUser(entry.getValue());
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        System.out.println(files.console + " §e" + savedUsers + " §aUsers has been saved!");
     }
 
     public static velocity getInstance(){

@@ -111,6 +111,10 @@ public class FileAPI {
         return content.get(String.valueOf(key)) != null;
     }
 
+    public File getFile(){
+        return file;
+    }
+
     public FileAPI reload(){
         try {
             // Reading File

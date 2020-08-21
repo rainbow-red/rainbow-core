@@ -1,10 +1,12 @@
 package de.remadisson.rainbowcore.api;
 
+import com.typesafe.config.ConfigException;
 import de.remadisson.rainbowcore.db.MySQL;
 import de.remadisson.rainbowcore.db.instances.EntryRow;
 import de.remadisson.rainbowcore.db.instances.Table;
 import de.remadisson.rainbowcore.db.instances.UpdateValue;
 import de.remadisson.rainbowcore.db.instances.Value;
+import de.remadisson.rainbowcore.files;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -97,8 +99,8 @@ public class DataBaseAPI {
      * Inserts a Single Value
      * @param value
      */
-    public void insertValue(String tablename, Value value) throws SQLException {
-        mysql.update("INSERT INTO `" + tablename + "` ('"+ value.getKey() +"') VALUES ('" + value.getValue() + "')" );
+    public void insertValue(String tablename, Value value, String idkey, String idvalue) throws SQLException {
+        mysql.update("INSERT INTO `" + tablename + "` ('"+ value.getKey() +"') VALUES ('" + value.getValue() + "')");
     }
 
     /**
@@ -107,13 +109,13 @@ public class DataBaseAPI {
      */
     public void insertValues(String tablename, ArrayList<Value> valueList) throws SQLException {
       String sql = "INSERT INTO `" + tablename + "` ";
-      String keys = "( '" + valueList.get(0).getKey() + "'";
+      String keys = "( `" + valueList.get(0).getKey() + "`";
       String values = ") VALUES ('"  + valueList.get(0).getValue() + "'";
 
       for(Value value : valueList){
           if(value != valueList.get(0)){
 
-              keys += " , '"  + value.getKey() + "'";
+              keys += " , `"  + value.getKey() + "`";
               values += " , '" + value.getValue() + "'";
 
           }
@@ -173,15 +175,22 @@ public class DataBaseAPI {
      * Returns Data / GETS DATA
      * @return
      */
-    public EntryRow getData(String TableName, String idKey, Object idValue) throws SQLException{
+    public EntryRow getData(String TableName, String idKey, Object idValue) throws SQLException, NullPointerException {
         if(!valueExists(TableName, idKey, idValue.toString())) return null;
 
         ResultSet rs = mysql.query("SELECT * FROM `" + TableName + "` WHERE `" + idKey + "` LIKE '" + idValue + "'");
 
         if(rs.next()) {
-            Value[] values = {null};
-            for(int columnIndex = 0; columnIndex < rs.getMetaData().getColumnCount(); columnIndex++){
-                values[columnIndex] = new Value(rs.getMetaData().getColumnName(columnIndex), rs.getObject(columnIndex));
+            Value[] values = new Value[100];
+            for(int columnIndex = 1; columnIndex < rs.getMetaData().getColumnCount(); columnIndex++){
+
+                int javaIndex = columnIndex-1;
+                String key = rs.getMetaData().getColumnName(columnIndex);
+                Object value = rs.getObject(columnIndex);
+
+                System.out.println(key + " - " + value + " - " + javaIndex);
+
+                values[javaIndex] = new Value(key, value);
             } // END OF FOR LOOP
 
             return new EntryRow(TableName, rs.getRow(), idKey, idValue, values);
