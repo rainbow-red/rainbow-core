@@ -68,12 +68,6 @@ public class JoinListener {
         files.pool.execute(() -> {
            if(!api.isLoaded(player.getUniqueId())) {
                api.getloadedUsers().put(uuid, new User(uuid));
-               System.out.println(files.debug + player.getUsername() + " is now loaded!");
-               try {
-                   System.out.println(api.getUser(player.getUniqueId()).getSettings());
-               } catch (SQLException throwables) {
-                   throwables.printStackTrace();
-               }
            }
             applyHeaderAndFooter(player);
         });

@@ -8,6 +8,7 @@ import de.remadisson.rainbowcore.db.MySQL;
 import de.remadisson.rainbowcore.db.enums.ColumnIndex;
 import de.remadisson.rainbowcore.db.enums.ColumnType;
 import de.remadisson.rainbowcore.db.instances.*;
+import de.remadisson.rainbowcore.files;
 import de.remadisson.rainbowcore.user.enums.UserTablist;
 import de.remadisson.rainbowcore.user.instances.User;
 import de.remadisson.rainbowcore.user.instances.UserSettings;
@@ -64,7 +65,7 @@ public class Database {
             Arrays.stream(er.getValues()).forEach(value -> {
                 if (value.getKey().equalsIgnoreCase("settings")) {
                     tablist[0] = UserTablist.valueOf(JsonParser.parseString(value.getValue()).getAsJsonObject().get("tablist").toString().replaceAll("\"", ""));
-                } else if (value.getKey().equalsIgnoreCase("lastOnline")) {
+                } else if (value.getKey().equalsIgnoreCase("lastonline")) {
                     lastOnline[0] = value.getValue();
                 }
             });

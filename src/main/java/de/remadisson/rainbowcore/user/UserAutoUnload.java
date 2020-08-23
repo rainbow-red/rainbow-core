@@ -38,7 +38,12 @@ public class UserAutoUnload {
                    e.printStackTrace();
                }
            }
-        }).delay(20, TimeUnit.MINUTES).repeat(20, TimeUnit.MINUTES).schedule();
+
+            for(User user : delete){
+                api.unloadUser(user.getUUID());
+            }
+
+        }).delay(2, TimeUnit.MINUTES).repeat(20, TimeUnit.MINUTES).schedule();
         });
     }
 

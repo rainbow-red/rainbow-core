@@ -91,14 +91,16 @@ public class velocity {
         UserDataAPI api = new UserDataAPI();
         int savedUsers = 0;
         for(Map.Entry<UUID, User> entry : api.getloadedUsers().entrySet()){
-            System.out.println(entry.getValue().getUsername());
             try {
                     Database.saveUser(entry.getValue());
+                    savedUsers++;
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
             }
-        System.out.println(files.console + " §e" + savedUsers + " §aUsers has been saved!");
+        if(savedUsers > 0) {
+            System.out.println(files.console + " §e" + savedUsers + " §aUsers has been saved!");
+        }
     }
 
     public static velocity getInstance(){

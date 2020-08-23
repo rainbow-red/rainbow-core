@@ -34,4 +34,8 @@ public class UserDataAPI {
         return null;
     }
 
+    public void unloadUser(UUID uuid){
+        getloadedUsers().remove(uuid);
+    }
+
 }

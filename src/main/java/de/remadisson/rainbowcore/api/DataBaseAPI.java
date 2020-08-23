@@ -1,12 +1,10 @@
 package de.remadisson.rainbowcore.api;
 
-import com.typesafe.config.ConfigException;
 import de.remadisson.rainbowcore.db.MySQL;
 import de.remadisson.rainbowcore.db.instances.EntryRow;
 import de.remadisson.rainbowcore.db.instances.Table;
 import de.remadisson.rainbowcore.db.instances.UpdateValue;
 import de.remadisson.rainbowcore.db.instances.Value;
-import de.remadisson.rainbowcore.files;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -181,14 +179,12 @@ public class DataBaseAPI {
         ResultSet rs = mysql.query("SELECT * FROM `" + TableName + "` WHERE `" + idKey + "` LIKE '" + idValue + "'");
 
         if(rs.next()) {
-            Value[] values = new Value[100];
-            for(int columnIndex = 1; columnIndex < rs.getMetaData().getColumnCount(); columnIndex++){
+            Value[] values = new Value[rs.getMetaData().getColumnCount()];
 
+            for(int columnIndex = 1; columnIndex <= rs.getMetaData().getColumnCount(); columnIndex++){
                 int javaIndex = columnIndex-1;
                 String key = rs.getMetaData().getColumnName(columnIndex);
                 Object value = rs.getObject(columnIndex);
-
-                System.out.println(key + " - " + value + " - " + javaIndex);
 
                 values[javaIndex] = new Value(key, value);
             } // END OF FOR LOOP
