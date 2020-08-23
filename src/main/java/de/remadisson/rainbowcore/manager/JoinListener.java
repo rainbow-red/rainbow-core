@@ -11,20 +11,21 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import de.remadisson.rainbowcore.api.UserDataAPI;
 import de.remadisson.rainbowcore.files;
 import de.remadisson.rainbowcore.sql.Database;
+import de.remadisson.rainbowcore.user.enums.UserTablist;
 import de.remadisson.rainbowcore.user.instances.User;
 import net.kyori.text.TextComponent;
 
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class JoinListener {
 
-    private final ProxyServer proxyServer;
+    private static ProxyServer proxyServer = null;
 
     @Inject
     public JoinListener(ProxyServer proxyServer){
-        this.proxyServer = proxyServer;
+        JoinListener.proxyServer = proxyServer;
     }
 
     @Subscribe
@@ -69,7 +70,7 @@ public class JoinListener {
            if(!api.isLoaded(player.getUniqueId())) {
                api.getloadedUsers().put(uuid, new User(uuid));
            }
-            applyHeaderAndFooter(player);
+            applyHeaderAndFooter(player, "§crainbowlicious");
         });
 
 
@@ -79,22 +80,36 @@ public class JoinListener {
     public void onPostServerConnect(ServerPostConnectEvent e){
         files.pool.execute(() -> {
             if(e.getPreviousServer() != e.getPlayer().getCurrentServer().get()){
-                applyHeaderAndFooter(e.getPlayer());
+                applyHeaderAndFooter(e.getPlayer(), "§crainbowlicious");
             }
         });
     }
 
-    public void applyHeaderAndFooter(Player p) {
+
+    public static void applyHeaderAndFooter(Player p, String animation) {
+
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        int max_player_count = 100;
-        String temp_header = "§e§l« §eRainbowRED §e§l» \n §7Welcome " + p.getUsername() + " \n §a§7You play on §b" + p.getCurrentServer().get().getServerInfo().getName() + " \n";
-        String temp_footer = "\n §e " + proxyServer.getPlayerCount() + "§7/§e" + max_player_count + "§7 Players are online! \n §9Discord§7: §9remady.me/dc \n §bTwitter§7: §bRainbowNetwork";
-        p.setHeaderAndFooter(TextComponent.of(temp_header), TextComponent.of(temp_footer));
+        UserDataAPI api = new UserDataAPI();
+        User user = api.getUser(p.getUniqueId());
+
+        try {
+            UserTablist tablist = user.getSettings().getTablist() != null ? user.getSettings().getTablist() : UserTablist.STANDARD;
+
+            Calendar cal = new GregorianCalendar();
+            SimpleDateFormat time = new SimpleDateFormat("HH:mm");
+            time.setTimeZone(TimeZone.getTimeZone("UTC"));
+            SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
+            date.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+            p.setHeaderAndFooter(TextComponent.of(tablist.getReplacedHeader(p.getCurrentServer().get().getServerInfo().getName(),time.format(cal.getTime()),date.format(cal.getTime()))), TextComponent.of(tablist.getReplacedFooter(animation, proxyServer.getPlayerCount())));
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
 }

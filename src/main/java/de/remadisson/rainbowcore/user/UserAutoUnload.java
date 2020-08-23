@@ -43,7 +43,7 @@ public class UserAutoUnload {
                 api.unloadUser(user.getUUID());
             }
 
-        }).delay(2, TimeUnit.MINUTES).repeat(20, TimeUnit.MINUTES).schedule();
+        }).delay(20, TimeUnit.MINUTES).repeat(20, TimeUnit.MINUTES).schedule();
         });
     }
 

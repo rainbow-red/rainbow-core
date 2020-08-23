@@ -3,7 +3,11 @@ package de.remadisson.rainbowcore.user.instances;
 import com.google.gson.JsonObject;
 import de.remadisson.rainbowcore.user.enums.UserTablist;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 public class UserSettings {
 
@@ -23,16 +27,20 @@ public class UserSettings {
         return tablist;
     }
 
-    public String getTablistString(){
-        return tablist.getHeaderAndFooter();
+    public String getHeader(){
+        return tablist.getHeader();
+    }
+
+    public String getFooter(){
+        return tablist.getFooter();
     }
 
     public String getLastOnline(){
         return lastOnline;
     }
 
-    public void updateLastOnline(){
-        lastOnline = new Date().toString();
+    public String updateLastOnline(){
+        return lastOnline = getLastOnlineValue();
     }
 
     public String getJSONString(){
@@ -40,6 +48,13 @@ public class UserSettings {
         object.addProperty("tablist", tablist.name());
 
         return object.toString();
+    }
+
+    public static String getLastOnlineValue(){
+        Calendar cal = new GregorianCalendar();
+        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
+        date.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return date.format(cal.getTime());
     }
 
 }

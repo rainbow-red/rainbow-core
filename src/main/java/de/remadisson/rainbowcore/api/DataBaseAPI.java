@@ -138,7 +138,7 @@ public class DataBaseAPI {
      * @param idvalue
      * @param valueList
      */
-    public void updateValues(String tablename, String idkey, Object idvalue, ArrayList<Value> valueList){
+    public void updateValues(String tablename, String idkey, Object idvalue, ArrayList<Value> valueList) throws SQLException {
         String sql = "UPDATE `" + tablename + "` SET `" + valueList.get(0).getKey()+ "`='" + valueList.get(0).getValue() + "' ";
 
         for(Value value : valueList){
@@ -149,6 +149,7 @@ public class DataBaseAPI {
             }
         }
         sql += " WHERE `" + idkey + "` LIKE '" + idvalue.toString() + "'" ;
+        mysql.update(sql);
     }
 
     /**

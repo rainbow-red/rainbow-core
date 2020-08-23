@@ -25,6 +25,7 @@ Description: <br>
 
 #### Commands
 
-| Command  	                            | Description  	                                        |
-|---	                                |---                                                	|
-| ```lockdown <on/off/add/remove>``` 	|  Prevents disallowed users from joining the Network. 	|
+| Command  	                                | Description  	                                            |
+|---	                                    |---                                                	    |
+| ```lockdown <on/off/add/remove>``` 	    |  Prevents disallowed users from joining the Network. 	    |
+|```devcore <tablist/userdata/userlog>```  |  Allows developers to trigger core-depending features.    |

@@ -1,14 +1,11 @@
 package de.remadisson.rainbowcore.sql;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.remadisson.rainbowcore.api.DataBaseAPI;
-import de.remadisson.rainbowcore.api.MojangAPI;
 import de.remadisson.rainbowcore.db.MySQL;
 import de.remadisson.rainbowcore.db.enums.ColumnIndex;
 import de.remadisson.rainbowcore.db.enums.ColumnType;
 import de.remadisson.rainbowcore.db.instances.*;
-import de.remadisson.rainbowcore.files;
 import de.remadisson.rainbowcore.user.enums.UserTablist;
 import de.remadisson.rainbowcore.user.instances.User;
 import de.remadisson.rainbowcore.user.instances.UserSettings;
@@ -50,7 +47,7 @@ public class Database {
         if(!userExists(user.getUUID())){
             api.insertValues(tablename, new ArrayList<Value>(Arrays.asList(new Value("uuid", user.getUUID()) , new Value("name", user.getUsername()) ,new Value("settings", user.getSettings().getJSONString()), new Value("lastOnline", user.getSettings().getLastOnline()))));
         } else {
-            api.updateValues(tablename, "uuid", user.getUUID(),  new ArrayList<Value>(Arrays.asList(new Value("settings", user.getSettings().getJSONString()), new Value("lastOnline", user.getSettings().getLastOnline()))));
+            api.updateValues(tablename, "uuid", user.getUUID(),  new ArrayList<Value>(Arrays.asList(new Value("settings", user.getSettings().getJSONString()), new Value("lastOnline", user.getSettings().updateLastOnline()))));
         }
 
     }
@@ -60,7 +57,7 @@ public class Database {
         if(userExists(uuid)) {
             EntryRow er = api.getData(tablename, "uuid", uuid);
 
-            final UserTablist[] tablist = {UserTablist.STANDART};
+            final UserTablist[] tablist = {UserTablist.STANDARD};
             final String[] lastOnline = {new Date().toString()};
             Arrays.stream(er.getValues()).forEach(value -> {
                 if (value.getKey().equalsIgnoreCase("settings")) {
@@ -71,7 +68,7 @@ public class Database {
             });
             return new UserSettings(tablist[0], lastOnline[0]);
         }
-        return new UserSettings(UserTablist.STANDART, new Date().toString());
+        return new UserSettings(UserTablist.STANDARD, UserSettings.getLastOnlineValue());
     }
 
 }

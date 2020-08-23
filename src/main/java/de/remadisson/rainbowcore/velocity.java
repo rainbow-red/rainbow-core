@@ -8,15 +8,17 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import de.remadisson.rainbowcore.api.UserDataAPI;
+import de.remadisson.rainbowcore.commands.HubCommand;
+import de.remadisson.rainbowcore.commands.devCoreCommand;
 import de.remadisson.rainbowcore.commands.lockdownCommand;
 import de.remadisson.rainbowcore.manager.JoinListener;
 import de.remadisson.rainbowcore.manager.ServerPingListener;
 import de.remadisson.rainbowcore.sql.Database;
 import de.remadisson.rainbowcore.user.UserAutoUnload;
+import de.remadisson.rainbowcore.user.UserTablistUpdate;
 import de.remadisson.rainbowcore.user.instances.User;
 import org.slf4j.Logger;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
@@ -74,12 +76,17 @@ public class velocity {
         // Registering Commands
         final CommandManager cm = server.getCommandManager();
         cm.register(new lockdownCommand(server, logger), "lockdown");
+        cm.register(new devCoreCommand(server, logger), "devcore");
+        cm.register(new HubCommand(server, logger), "hub", "lobby", "l", "leave");
 
         server.getEventManager().register(this, new JoinListener(server));
         server.getEventManager().register(this, new ServerPingListener(server));
 
         // Enabling User Save and auto unload
         UserAutoUnload.UserUpdateAndUnload(server);
+
+        //Enabling UserTablistUpdate
+        UserTablistUpdate.updateTablist(server);
 
         // Sending a Message to Console
         logger.info((prefix + "§2Rainbow-Core has successfully been started!"));
