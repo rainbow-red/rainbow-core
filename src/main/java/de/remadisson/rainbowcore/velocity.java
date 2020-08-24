@@ -26,7 +26,7 @@ import java.util.UUID;
 @Plugin(
         id = "rainbowcore",
         name = "RainbowCore",
-        version = "1.0-SNAPSHOT",
+        version = "1.0.9",
         description = "This Plugin adds features that will create a main structure for our network",
         url = "https://www.rainbow.red",
         authors = {"remadisson"}

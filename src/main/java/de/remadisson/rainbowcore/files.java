@@ -8,6 +8,7 @@ import com.mongodb.util.JSON;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import de.remadisson.rainbowcore.api.FileAPI;
+import de.remadisson.rainbowcore.api.JsonConfigurationAPI;
 import de.remadisson.rainbowcore.manager.LockdownServer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -48,7 +49,8 @@ public class files {
      */
     public static void loadLockdownFile(Logger logger, ProxyServer server){
         // Initing the FileAPI -> Creating Files and Checking if they're empty
-        FileAPI config = new FileAPI(logger,"config.json", "plugins/RainbowCore/");
+        FileAPI fileAPI = new FileAPI("config.json", "plugins/RainbowCore/");
+        JsonConfigurationAPI config = new JsonConfigurationAPI(fileAPI);
 
         try {
             if(!config.contains("lockdown")) {
@@ -84,7 +86,7 @@ public class files {
         }
 
         // Adding config to an Arraylist, to edit it later!
-        files.add(config);
+        files.add(fileAPI);
     }
 
 }

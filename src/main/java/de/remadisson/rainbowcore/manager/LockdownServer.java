@@ -3,6 +3,7 @@ package de.remadisson.rainbowcore.manager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.remadisson.rainbowcore.api.JsonConfigurationAPI;
 import de.remadisson.rainbowcore.files;
 
 import java.io.IOException;
@@ -73,7 +74,7 @@ public class LockdownServer {
         });
 
         try {
-            files.files.get(0).set("lockdown", lockdownedServers).save();
+            new JsonConfigurationAPI(files.files.get(0)).set("lockdown", lockdownedServers).save();
         } catch (IOException e) {
             e.printStackTrace();
         }

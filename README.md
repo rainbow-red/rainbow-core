@@ -10,7 +10,7 @@ Description: <br>
 -[x] DatabaseAPI - Provides methods to connect, insert and read data from the database. [Priority: HIGH] (UNTESTED) <br>
 -[x] UserInitialsAPI - Getting Prefix, Suffix, Color from the User. [Priority: MID] (UNTESTED)<br>
 -[x] UserDataAPI - Provides methods to save/read User Data in an easier way! <br>
--[ ] UserLogAPI - Manages Files to log interactions with the server. <br>
+-[x] UserLogAPI - Manages Files to log interactions with the server. <br>
 
 <br>
 <!--
