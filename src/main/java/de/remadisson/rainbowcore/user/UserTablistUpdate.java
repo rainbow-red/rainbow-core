@@ -21,7 +21,11 @@ public class UserTablistUpdate {
 
                 if(proxyServer.getPlayerCount() > 0) {
                     proxyServer.getAllPlayers().forEach(player -> {
-                        JoinListener.applyHeaderAndFooter(player, animation.get(animation_status));
+                        try {
+                            JoinListener.applyHeaderAndFooter(player, animation.get(animation_status));
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         try {
                             Thread.sleep(10);
                         } catch (InterruptedException e) {
@@ -29,7 +33,7 @@ public class UserTablistUpdate {
                         }
                     });
 
-                    if (animation_status < 5) {
+                    if (animation_status < animation.size()-1) {
                         animation_status++;
                     } else {
                         animation_status = 0;

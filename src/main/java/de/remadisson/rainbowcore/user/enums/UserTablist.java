@@ -7,10 +7,10 @@ public enum UserTablist {
     // TIME -> %time_HH:mm%
     // DATE -> %date_yyyy.MM.dd%
 
-    MINIMAL("§l§5R§da§9i§bn§ab§eo§6w§cRED§o§8\n§7[On server: %servername%]", "§7Players on network: %networkplayercounter%"),
-    STANDARD("§l§5R§da§9i§bn§ab§eo§6w§cRED§o§8\n§7[On server: %servername%]\n§r§fTime: %time_HH:mm% UTC\n§7Playerlist:", "§7Players on network: %networkplayercounter%"),
-    EXTENDED("§l§5R§da§9i§bn§ab§eo§6w§cRED§bNetwork\n§o§7[On server: %servername%]\n§r§fTime: %time_HH:mm% UTC | Date: %date_yyyy.MM.dd%\n§7Players on this server:",
-            "§7Players on network: %networkplayercounter%\n§l§fThank you for being %animation:rainbowlicious%§r§l§f!");
+    MINIMAL("§l§5R§da§9i§bn§ab§eo§6w§cRED§o§8\n§o§7On server: §a%servername%", "§7Players on network: §b%networkplayercounter%"),
+    STANDARD("§l§5R§da§9i§bn§ab§eo§6w§cRED§o§8\n\n§o§7On server: §a%servername%\n§r§7Time§8: §e%time_HH:mm% §eUTC\n\n§r§7Playerlist:", "\n§7Players on network: §b%networkplayercounter%"),
+    EXTENDED("§l§5R§da§9i§bn§ab§eo§6w§cRED§bNetwork\n\n§o§7On server: §a%servername%\n§r§7Time§8: §e%time_HH:mm% §eUTC §8| §7Date§8: §e%date_yyyy.MM.dd%\n\n§r§7Players on this server:",
+            "\n§7Players on network: §b%networkplayercounter%\n§l§7Thank you for being %animation:rainbowlicious%§r§l§f!");
 
     private String header;
     private String footer;
@@ -27,6 +27,8 @@ public enum UserTablist {
     public String getFooter(){ return footer; }
 
     public String getReplacedHeader(String servername, String time, String date){
+        time = time.replaceAll(":", "§7:§e");
+        date = date.replaceAll("/", "§7/§e");
         return header.replace("%servername%", servername).replace("%time_HH:mm%", time).replace("%date_yyyy.MM.dd%", date);
     }
 

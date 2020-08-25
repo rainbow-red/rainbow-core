@@ -70,7 +70,11 @@ public class JoinListener {
            if(!api.isLoaded(player.getUniqueId())) {
                api.getloadedUsers().put(uuid, new User(uuid));
            }
-            applyHeaderAndFooter(player, "§crainbowlicious");
+            try {
+                applyHeaderAndFooter(player, "§crainbowlicious");
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
         });
 
 
@@ -80,19 +84,19 @@ public class JoinListener {
     public void onPostServerConnect(ServerPostConnectEvent e){
         files.pool.execute(() -> {
             if(e.getPreviousServer() != e.getPlayer().getCurrentServer().get()){
-                applyHeaderAndFooter(e.getPlayer(), "§crainbowlicious");
+                try {
+                    applyHeaderAndFooter(e.getPlayer(), "§crainbowlicious");
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
             }
         });
     }
 
 
-    public static void applyHeaderAndFooter(Player p, String animation) {
+    public static void applyHeaderAndFooter(Player p, String animation) throws InterruptedException {
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Thread.sleep(1000);
 
         UserDataAPI api = new UserDataAPI();
         User user = api.getUser(p.getUniqueId());
