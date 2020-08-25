@@ -96,9 +96,12 @@ public class JoinListener {
 
     public static void applyHeaderAndFooter(Player p, String animation) throws InterruptedException {
 
-        Thread.sleep(1000);
+
 
         UserDataAPI api = new UserDataAPI();
+
+        if(!api.isLoaded(p.getUniqueId())) Thread.sleep(1000);
+
         User user = api.getUser(p.getUniqueId());
 
         try {
@@ -110,7 +113,7 @@ public class JoinListener {
             SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
             date.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-            p.setHeaderAndFooter(TextComponent.of(tablist.getReplacedHeader(p.getCurrentServer().get().getServerInfo().getName(),time.format(cal.getTime()),date.format(cal.getTime()))), TextComponent.of(tablist.getReplacedFooter(animation, proxyServer.getPlayerCount())));
+            p.setHeaderAndFooter(TextComponent.of(tablist.getReplacedHeader(p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "§cLoading..",time.format(cal.getTime()),date.format(cal.getTime()))), TextComponent.of(tablist.getReplacedFooter(animation, proxyServer.getPlayerCount())));
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
