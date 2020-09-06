@@ -7,7 +7,6 @@ import de.remadisson.rainbowcore.db.MySQL;
 import de.remadisson.rainbowcore.db.enums.ColumnIndex;
 import de.remadisson.rainbowcore.db.enums.ColumnType;
 import de.remadisson.rainbowcore.db.instances.*;
-import de.remadisson.rainbowcore.files;
 import de.remadisson.rainbowcore.user.enums.UserTablist;
 import de.remadisson.rainbowcore.user.instances.User;
 import de.remadisson.rainbowcore.user.instances.UserSettings;
