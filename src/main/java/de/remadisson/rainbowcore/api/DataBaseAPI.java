@@ -144,7 +144,7 @@ public class DataBaseAPI {
         for(Value value : valueList){
             if(value != valueList.get(0)){
 
-                sql += " , `" + valueList.get(0).getKey()+ "`='" + valueList.get(0).getValue() + "' ";
+                sql += " , `" + value.getKey()+ "`='" + value.getValue() + "' ";
 
             }
         }

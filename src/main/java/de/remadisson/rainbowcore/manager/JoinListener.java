@@ -96,11 +96,9 @@ public class JoinListener {
 
     public static void applyHeaderAndFooter(Player p, String animation) throws InterruptedException {
 
-
-
         UserDataAPI api = new UserDataAPI();
 
-        if(!api.isLoaded(p.getUniqueId())) Thread.sleep(1000);
+        if(!api.isLoaded(p.getUniqueId())) return;
 
         User user = api.getUser(p.getUniqueId());
 

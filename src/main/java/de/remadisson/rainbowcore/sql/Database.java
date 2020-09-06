@@ -1,20 +1,19 @@
 package de.remadisson.rainbowcore.sql;
 
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.remadisson.rainbowcore.api.DataBaseAPI;
 import de.remadisson.rainbowcore.db.MySQL;
 import de.remadisson.rainbowcore.db.enums.ColumnIndex;
 import de.remadisson.rainbowcore.db.enums.ColumnType;
 import de.remadisson.rainbowcore.db.instances.*;
+import de.remadisson.rainbowcore.files;
 import de.remadisson.rainbowcore.user.enums.UserTablist;
 import de.remadisson.rainbowcore.user.instances.User;
 import de.remadisson.rainbowcore.user.instances.UserSettings;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 public class Database {
     public static MySQL mysql;
@@ -45,9 +44,9 @@ public class Database {
     public static void saveUser(User user) throws SQLException {
         DataBaseAPI api = new DataBaseAPI(mysql);
         if(!userExists(user.getUUID())){
-            api.insertValues(tablename, new ArrayList<Value>(Arrays.asList(new Value("uuid", user.getUUID()) , new Value("name", user.getUsername()) ,new Value("settings", user.getSettings().getJSONString()), new Value("lastOnline", user.getSettings().updateLastOnline()))));
+            api.insertValues(tablename, new ArrayList<Value>(Arrays.asList(new Value("uuid", user.getUUID()), new Value("name", user.getUsername()), new Value("settings", user.getSettings().getJSONString()), new Value("lastOnline", user.getSettings().updateLastOnline()))));
         } else {
-            api.updateValues(tablename, "uuid", user.getUUID(),  new ArrayList<Value>(Arrays.asList(new Value("settings", user.getSettings().getJSONString()), new Value("lastOnline", user.getSettings().updateLastOnline()))));
+            api.updateValues(tablename, "uuid", user.getUUID(),  new ArrayList<Value>(Arrays.asList(new Value("name", user.getUsername()), new Value("settings", user.getSettings().getJSONString()), new Value("lastOnline", user.getSettings().updateLastOnline()))));
         }
 
     }
@@ -59,16 +58,24 @@ public class Database {
 
             final UserTablist[] tablist = {UserTablist.STANDARD};
             final String[] lastOnline = {new Date().toString()};
+            final HashMap<String, Object> additionalSettings = new HashMap<>();
             Arrays.stream(er.getValues()).forEach(value -> {
                 if (value.getKey().equalsIgnoreCase("settings")) {
-                    tablist[0] = UserTablist.valueOf(JsonParser.parseString(value.getValue()).getAsJsonObject().get("tablist").toString().replaceAll("\"", ""));
+                    JsonObject settings = JsonParser.parseString(value.getValue()).getAsJsonObject();
+                    for(String string : settings.keySet()){
+                        if(!string.toLowerCase().equalsIgnoreCase("tablist")){
+                            additionalSettings.put(string, settings.get(string));
+                        } else {
+                            tablist[0] = UserTablist.valueOf(settings.get(string).toString().replaceAll("\"", ""));
+                        }
+                    }
                 } else if (value.getKey().equalsIgnoreCase("lastonline")) {
                     lastOnline[0] = value.getValue();
                 }
             });
             return new UserSettings(tablist[0], lastOnline[0]);
         }
-        return new UserSettings(UserTablist.STANDARD, UserSettings.getLastOnlineValue());
+        return new UserSettings(UserTablist.STANDARD, UserSettings.getNewOnlineValue());
     }
 
 }
