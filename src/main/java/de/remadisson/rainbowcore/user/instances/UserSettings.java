@@ -5,7 +5,6 @@ import de.remadisson.rainbowcore.user.enums.UserTablist;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -40,7 +39,8 @@ public class UserSettings {
     }
 
     public String updateLastOnline(){
-        return lastOnline = getLastOnlineValue();
+        lastOnline = getLastOnlineValue();
+        return lastOnline;
     }
 
     public String getJSONString(){

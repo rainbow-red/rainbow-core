@@ -45,7 +45,7 @@ public class Database {
     public static void saveUser(User user) throws SQLException {
         DataBaseAPI api = new DataBaseAPI(mysql);
         if(!userExists(user.getUUID())){
-            api.insertValues(tablename, new ArrayList<Value>(Arrays.asList(new Value("uuid", user.getUUID()) , new Value("name", user.getUsername()) ,new Value("settings", user.getSettings().getJSONString()), new Value("lastOnline", user.getSettings().getLastOnline()))));
+            api.insertValues(tablename, new ArrayList<Value>(Arrays.asList(new Value("uuid", user.getUUID()) , new Value("name", user.getUsername()) ,new Value("settings", user.getSettings().getJSONString()), new Value("lastOnline", user.getSettings().updateLastOnline()))));
         } else {
             api.updateValues(tablename, "uuid", user.getUUID(),  new ArrayList<Value>(Arrays.asList(new Value("settings", user.getSettings().getJSONString()), new Value("lastOnline", user.getSettings().updateLastOnline()))));
         }
