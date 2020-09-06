@@ -8,9 +8,7 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import de.remadisson.rainbowcore.api.UserDataAPI;
-import de.remadisson.rainbowcore.commands.HubCommand;
-import de.remadisson.rainbowcore.commands.devCoreCommand;
-import de.remadisson.rainbowcore.commands.lockdownCommand;
+import de.remadisson.rainbowcore.commands.*;
 import de.remadisson.rainbowcore.manager.JoinListener;
 import de.remadisson.rainbowcore.manager.ServerPingListener;
 import de.remadisson.rainbowcore.sql.Database;
@@ -73,11 +71,20 @@ public class velocity {
         //Creating new Lockdown JSON-File
         files.loadLockdownFile(logger, server);
 
-        // Registering Commands
         final CommandManager cm = server.getCommandManager();
+
+        //Unregistering Commands
+        cm.unregister("server");
+        cm.unregister("glist");
+
+        // Registering Commands
         cm.register(new lockdownCommand(server, logger), "lockdown");
         cm.register(new devCoreCommand(server, logger), "devcore");
         cm.register(new HubCommand(server, logger), "hub", "lobby", "l", "leave");
+        cm.register(new FindCommand(server, logger), "find");
+        cm.register(new SendCommand(server, logger), "send");
+        cm.register(new ServerCommand(server, logger), "server");
+        cm.register(new ListCommand(server,logger), "glist");
 
         server.getEventManager().register(this, new JoinListener(server));
         server.getEventManager().register(this, new ServerPingListener(server));
