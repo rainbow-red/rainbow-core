@@ -81,7 +81,6 @@ public class velocity {
 
         server.getEventManager().register(this, new JoinListener(server));
         server.getEventManager().register(this, new ServerPingListener(server));
-
         // Enabling User Save and auto unload
         UserAutoUnload.UserUpdateAndUnload(server);
 

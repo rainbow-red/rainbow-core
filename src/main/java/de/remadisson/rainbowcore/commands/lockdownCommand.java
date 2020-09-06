@@ -3,6 +3,8 @@ package de.remadisson.rainbowcore.commands;
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.player.TabCompleteEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -11,10 +13,10 @@ import de.remadisson.rainbowcore.files;
 import de.remadisson.rainbowcore.manager.LockdownServer;
 import net.kyori.adventure.text.TextComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class lockdownCommand implements Command {
 
@@ -338,6 +340,42 @@ public class lockdownCommand implements Command {
         } else {
             sender.sendMessage(TextComponent.of(prefix + "§cThe Server §4" + input.toUpperCase() + " §ccould not be found!"));
         }
+    }
+
+    @Override
+    public List<String> suggest(@NotNull  CommandSource sender, String[] args){
+        List<String> suggestions = new ArrayList<String>();
+
+        if(args.length == 0) {
+            suggestions.addAll(Arrays.asList("help", "add", "remove", "on", "off"));
+        }else if(args.length == 1){
+            List<String> instances = new ArrayList<String>(Arrays.asList("help", "add", "remove", "on", "off"));
+
+            instances.stream().forEach(entry ->{
+                if(entry.toLowerCase().startsWith(args[0].toLowerCase())){
+                    suggestions.add(entry);
+                }
+            });
+
+        } else if(args.length == 2){
+            files.lockdown.entrySet().forEach(entry -> {
+                if((sender.hasPermission("core.lockdown." + entry.getKey().toLowerCase()) || sender.hasPermission("core.lockdown.*")) && entry.getKey().toLowerCase().startsWith(args[1].toLowerCase())){
+                    suggestions.add(entry.getKey());
+                }
+            });
+        } else if(args.length == 3){
+            if((args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove")) && args[2].length() > 0){
+                if(sender instanceof Player){
+                    Player player = (Player) sender;
+                    for(Player online : player.getCurrentServer().get().getServer().getPlayersConnected()){
+                        if(online.getUsername().toLowerCase().startsWith(args[2].toLowerCase())){
+                            suggestions.add(online.getUsername());
+                        }
+                    }
+                }
+            }
+        }
+        return suggestions;
     }
 
     /**
