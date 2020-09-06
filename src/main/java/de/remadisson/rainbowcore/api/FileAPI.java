@@ -44,6 +44,35 @@ public class FileAPI {
 
     }
 
+    public FileAPI(String filename, String path, boolean createMessage) {
+        this.filename = filename;
+        File folder = new File(path);
+
+        // Checking if Folder already exists
+        if(!folder.exists()){
+            folder.mkdir();
+        }
+
+        this.file = new File(folder, filename);
+
+        //Check if File exists
+        if(!file.exists()){
+            try {
+                // Create new File
+                file.createNewFile();
+
+                // Debug message
+                if(createMessage) {
+                    System.out.println(files.console + "§a" + filename + " §ehas been created!");
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
     /**
      * Returns the FileName
      * @return
@@ -96,9 +125,12 @@ public class FileAPI {
      * @param line
      * @throws IOException
      */
-    public void addContent(String line) throws IOException {
-        FileWriter contentWriter = new FileWriter(file);
+    public void addContent(String line, boolean newline) throws IOException {
+        FileWriter contentWriter = new FileWriter(file, true);
         contentWriter.write(line);
+        if(newline){
+            contentWriter.write(System.getProperty("line.separator"));
+        }
         contentWriter.close();
     }
 

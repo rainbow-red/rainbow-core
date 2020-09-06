@@ -13,11 +13,16 @@ public class UserLogAPI {
 
     public UserLogAPI(UUID uuid, String path){
         this.uuid = uuid;
-        fileAPI = new FileAPI(uuid.toString(), path);
+        fileAPI = new FileAPI(uuid.toString(), path, false);
+    }
+
+    public void log(String line, boolean newline) throws IOException {
+        fileAPI.addContent(line, newline);
+
     }
 
     public void log(String line) throws IOException {
-        fileAPI.addContent(line);
+        log(line, true);
     }
 
     public ArrayList<String> getLines() throws FileNotFoundException {
