@@ -1,8 +1,6 @@
 package de.remadisson.rainbowcore.api;
 
-import de.remadisson.rainbowcore.files;
 import de.remadisson.rainbowcore.user.instances.User;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -19,6 +17,12 @@ public class UserDataAPI {
 
     public boolean isLoaded(UUID uuid){
         return getloadedUsers().get(uuid) != null;
+    }
+
+    public User loadUser(UUID uuid){
+        User user = new User(uuid);
+        getloadedUsers().put(uuid, user);
+        return user;
     }
 
     public User getUser(UUID uuid){
