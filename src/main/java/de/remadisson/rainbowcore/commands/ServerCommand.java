@@ -55,7 +55,7 @@ public class ServerCommand implements Command {
 
                     default: {
                         if(!allowedServer.contains(one.toLowerCase())){
-                            if(server.getAllServers().stream().map(RegisteredServer::getServerInfo).map(ServerInfo::getName).map(String::toLowerCase).collect(Collectors.toList()).contains(one.toLowerCase())){
+                            if(!server.getAllServers().stream().map(RegisteredServer::getServerInfo).map(ServerInfo::getName).map(String::toLowerCase).collect(Collectors.toList()).contains(one.toLowerCase())){
                                 sender.sendMessage(TextComponent.of(files.prefix + "§cThere is no server named §4" + one.toLowerCase()));
                                 return;
                             }
