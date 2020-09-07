@@ -59,7 +59,7 @@ public class ListCommand implements Command {
                 switch(one.toLowerCase()){
                     case "help": {
                         sender.sendMessage(TextComponent.of(files.prefix + "§eHelp for §aGlist§8:"));
-                        sender.sendMessage(TextComponent.of(files.prefix + "§f- §e/glist §7<§eserver§8/§eall§7>"));
+                        sender.sendMessage(TextComponent.of(files.prefix + "§f- §e/glist §7<§eserver§7/§eall§7>"));
                         break;
                     }
 
@@ -104,7 +104,7 @@ public class ListCommand implements Command {
                 }
             } else {
                 sender.sendMessage(TextComponent.of(files.prefix + "§eHelp for §aGlist§8:"));
-                sender.sendMessage(TextComponent.of(files.prefix + "§f- /glist §7<§eserver§8/all§7>"));
+                sender.sendMessage(TextComponent.of(files.prefix + "§f- /glist §7<§eserver§7/all§7>"));
             }
     }
 
