@@ -35,7 +35,7 @@ public class ListCommand implements Command {
             ArrayList<String> allowedServers = new ArrayList<>();
             if(sender instanceof Player){
                 for(RegisteredServer server : server.getAllServers()){
-                    if(sender.hasPermission("core.glist." + server.getServerInfo().getName()) || sender.hasPermission("core.*") || sender.hasPermission("core.list.*")){
+                    if(sender.hasPermission("core.glist." + server.getServerInfo().getName().toLowerCase()) || sender.hasPermission("core.*") || sender.hasPermission("core.list.*")){
                         allowedServers.add(server.getServerInfo().getName().toLowerCase());
                     }
                 }
@@ -84,6 +84,10 @@ public class ListCommand implements Command {
                                 sender.sendMessage(TextComponent.of(files.prefix + "§cThis Server is currently not available!"));
                             }
                         } else {
+                            if(server.getAllServers().stream().map(RegisteredServer::getServerInfo).map(ServerInfo::getName).map(String::toLowerCase).collect(Collectors.toList()).contains(one.toLowerCase())){
+                                sender.sendMessage(TextComponent.of(files.prefix + "§cThere is no server named §4" + one.toLowerCase()));
+                                return;
+                            }
                             sender.sendMessage(TextComponent.of(files.message_no_permission));
                             break;
                         }
@@ -106,15 +110,15 @@ public class ListCommand implements Command {
     public List<String> suggest(@NotNull CommandSource sender, String[] args){
         List<String> suggestions = new ArrayList<>();
         List<String> instances = new ArrayList<>();
-        instances.addAll(server.getAllServers().stream().map(RegisteredServer::getServerInfo).map(ServerInfo::getName).collect(Collectors.toList()));
-        instances.add("all");
+        instances.addAll(server.getAllServers().stream().map(RegisteredServer::getServerInfo).map(ServerInfo::getName).filter(filter -> sender.hasPermission("core.list." + filter) || sender.hasPermission("core.*") || sender.hasPermission("core.list.*")).collect(Collectors.toList()));
+        if(sender.hasPermission("core.list.all") || sender.hasPermission("core.list.*") || sender.hasPermission("core.*")) {
+            instances.add("all");
+        }
 
         if(args.length == 0) {
             suggestions.addAll(instances);
         } else if(args.length == 1){
-            instances.stream().forEach(server -> {
-                if(server.startsWith(args[0].toLowerCase())) suggestions.add(server);
-            });
+            suggestions.addAll(instances.stream().filter(filter -> filter.toLowerCase().startsWith(args[0].toLowerCase())).collect(Collectors.toList()));
         }
 
         return suggestions;
