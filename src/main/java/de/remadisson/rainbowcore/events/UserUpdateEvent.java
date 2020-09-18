@@ -31,4 +31,10 @@ public class UserUpdateEvent {
     public User getUser(){
         return user;
     }
+
+    /**
+     * Returns if the user is Unloaded after
+     * @return
+     */
+    public boolean getUnload(){ return unload; }
 }
