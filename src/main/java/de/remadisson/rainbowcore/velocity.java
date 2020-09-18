@@ -13,6 +13,7 @@ import de.remadisson.rainbowcore.api.UserDataAPI;
 import de.remadisson.rainbowcore.commands.*;
 import de.remadisson.rainbowcore.manager.JoinListener;
 import de.remadisson.rainbowcore.manager.ServerPingListener;
+import de.remadisson.rainbowcore.manager.UserManager;
 import de.remadisson.rainbowcore.sql.Database;
 import de.remadisson.rainbowcore.user.UserAutoUnload;
 import de.remadisson.rainbowcore.user.UserTablistUpdate;
@@ -90,10 +91,13 @@ public class velocity {
         cm.register(new ServerCommand(server, logger), "server");
         cm.register(new ListCommand(server,logger), "glist");
 
+        // Registering Listeners
         server.getEventManager().register(this, injector.getInstance(UserSettings.class));
         server.getEventManager().register(this, injector.getInstance(UserDataAPI.class));
         server.getEventManager().register(this, new JoinListener(server));
         server.getEventManager().register(this, new ServerPingListener(server));
+        server.getEventManager().register(this, new UserManager(server));
+
         // Enabling User Save and auto unload
         UserAutoUnload.UserUpdateAndUnload(server);
 
