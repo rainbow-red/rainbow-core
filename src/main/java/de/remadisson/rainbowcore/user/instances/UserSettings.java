@@ -1,20 +1,31 @@
 package de.remadisson.rainbowcore.user.instances;
 
 import com.google.gson.JsonObject;
+import com.velocitypowered.api.proxy.ProxyServer;
+import de.remadisson.rainbowcore.api.UserDataAPI;
+import de.remadisson.rainbowcore.events.UserUpdateEvent;
 import de.remadisson.rainbowcore.user.enums.UserTablist;
 
+import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class UserSettings {
 
+    @Inject
+    public ProxyServer proxyServer;
+
+    private UUID uuid;
     private UserTablist tablist;
     private String lastOnline;
     private HashMap<String, Object> additionSettings = new HashMap<>();
 
-    public UserSettings(UserTablist tablist, String lastOnline){
+    public UserSettings(UUID uuid, UserTablist tablist, String lastOnline){
         this.tablist = tablist;
         this.lastOnline = lastOnline;
+        this.uuid = uuid;
+
+        proxyServer.getEventManager().fire(new UserUpdateEvent(new UserDataAPI().getUser(uuid), false));
     }
 
     public void setTablist(UserTablist list){
@@ -39,6 +50,7 @@ public class UserSettings {
 
     public String updateLastOnline(){
         lastOnline = getNewOnlineValue();
+        proxyServer.getEventManager().fire(new UserUpdateEvent(new UserDataAPI().getUser(uuid), false));
         return getLastOnline();
     }
 
@@ -60,16 +72,19 @@ public class UserSettings {
 
     public UserSettings addAdditionSetting(String key, Object value){
         additionSettings.put(key, value);
+        proxyServer.getEventManager().fire(new UserUpdateEvent(new UserDataAPI().getUser(uuid), false));
         return this;
     }
 
     public UserSettings removeAdditionSetting(String key){
         additionSettings.remove(key);
+        proxyServer.getEventManager().fire(new UserUpdateEvent(new UserDataAPI().getUser(uuid), false));
         return this;
     }
 
     public UserSettings setAdditonSettings(HashMap<String, Object> additionSettings){
         this.additionSettings = additionSettings;
+        proxyServer.getEventManager().fire(new UserUpdateEvent(new UserDataAPI().getUser(uuid), false));
         return this;
     }
 

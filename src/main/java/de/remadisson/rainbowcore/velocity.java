@@ -1,6 +1,8 @@
 package de.remadisson.rainbowcore;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
@@ -15,6 +17,7 @@ import de.remadisson.rainbowcore.sql.Database;
 import de.remadisson.rainbowcore.user.UserAutoUnload;
 import de.remadisson.rainbowcore.user.UserTablistUpdate;
 import de.remadisson.rainbowcore.user.instances.User;
+import de.remadisson.rainbowcore.user.instances.UserSettings;
 import org.slf4j.Logger;
 
 import java.sql.SQLException;
@@ -34,6 +37,7 @@ public class velocity {
     private final String prefix = files.console;
     private Logger logger;
     private ProxyServer server;
+    private Injector injector = Guice.createInjector();
 
     public static velocity plugin;
 
@@ -86,6 +90,8 @@ public class velocity {
         cm.register(new ServerCommand(server, logger), "server");
         cm.register(new ListCommand(server,logger), "glist");
 
+        server.getEventManager().register(this, injector.getInstance(UserSettings.class));
+        server.getEventManager().register(this, injector.getInstance(UserDataAPI.class));
         server.getEventManager().register(this, new JoinListener(server));
         server.getEventManager().register(this, new ServerPingListener(server));
         // Enabling User Save and auto unload

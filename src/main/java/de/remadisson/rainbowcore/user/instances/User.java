@@ -1,10 +1,11 @@
 package de.remadisson.rainbowcore.user.instances;
 
-import de.remadisson.rainbowcore.api.DataBaseAPI;
+import com.velocitypowered.api.proxy.ProxyServer;
 import de.remadisson.rainbowcore.api.MojangAPI;
 import de.remadisson.rainbowcore.sql.Database;
 import de.remadisson.rainbowcore.user.enums.UserTablist;
 
+import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -49,8 +50,7 @@ public class User {
         if(settings == null){
            settings = Database.getUserSettings(uuid);
         }
-            return settings;
-
+        return settings;
     }
 
 

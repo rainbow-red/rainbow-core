@@ -72,9 +72,9 @@ public class Database {
                     lastOnline[0] = value.getValue();
                 }
             });
-            return new UserSettings(tablist[0], lastOnline[0]);
+            return new UserSettings(uuid, tablist[0], lastOnline[0]);
         }
-        return new UserSettings(UserTablist.STANDARD, UserSettings.getNewOnlineValue());
+        return new UserSettings(uuid, UserTablist.STANDARD, UserSettings.getNewOnlineValue());
     }
 
 }
