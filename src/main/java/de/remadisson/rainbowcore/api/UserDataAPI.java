@@ -11,8 +11,7 @@ import java.util.UUID;
 
 public class UserDataAPI {
 
-    @Inject
-    public ProxyServer server;
+
 
     private final static HashMap<UUID, User> cachedUsers = new HashMap<>();
 
@@ -29,7 +28,7 @@ public class UserDataAPI {
     public User loadUser(UUID uuid){
         User user = new User(uuid);
         getloadedUsers().put(uuid, user);
-        server.getEventManager().fire(new UserUpdateEvent(user, false));
+        //server.getEventManager().fire(new UserUpdateEvent(user, false));
         return user;
     }
 
@@ -47,7 +46,7 @@ public class UserDataAPI {
     }
 
     public void unloadUser(UUID uuid) {
-        server.getEventManager().fire(new UserUpdateEvent(getUser(uuid), true));
+        //server.getEventManager().fire(new UserUpdateEvent(getUser(uuid), true));
         getloadedUsers().remove(uuid);
     }
 

@@ -18,7 +18,6 @@ import de.remadisson.rainbowcore.sql.Database;
 import de.remadisson.rainbowcore.user.UserAutoUnload;
 import de.remadisson.rainbowcore.user.UserTablistUpdate;
 import de.remadisson.rainbowcore.user.instances.User;
-import de.remadisson.rainbowcore.user.instances.UserSettings;
 import org.slf4j.Logger;
 
 import java.sql.SQLException;
@@ -28,7 +27,7 @@ import java.util.UUID;
 @Plugin(
         id = "rainbowcore",
         name = "RainbowCore",
-        version = "1.0.9",
+        version = "1.1.0",
         description = "This Plugin adds features that will create a main structure for our network",
         url = "https://www.rainbow.red",
         authors = {"remadisson"}
@@ -38,7 +37,6 @@ public class velocity {
     private final String prefix = files.console;
     private Logger logger;
     private ProxyServer server;
-    private Injector injector = Guice.createInjector();
 
     public static velocity plugin;
 
@@ -92,8 +90,8 @@ public class velocity {
         cm.register(new ListCommand(server,logger), "glist");
 
         // Registering Listeners
-        server.getEventManager().register(this, injector.getInstance(UserSettings.class));
-        server.getEventManager().register(this, injector.getInstance(UserDataAPI.class));
+        //server.getEventManager().register(this, injector.getInstance(UserSettings.class));
+        //server.getEventManager().register(this, injector.getInstance(UserDataAPI.class));
         server.getEventManager().register(this, new JoinListener(server));
         server.getEventManager().register(this, new ServerPingListener(server));
         server.getEventManager().register(this, new UserManager(server));

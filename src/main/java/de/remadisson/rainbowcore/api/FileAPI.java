@@ -116,6 +116,7 @@ public class FileAPI {
         while(contentScanner.hasNextLine()){
             content.add(contentScanner.nextLine());
         }
+
         contentScanner.close();
         return content;
     }
