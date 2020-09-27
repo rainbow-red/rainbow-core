@@ -1,9 +1,8 @@
 package de.remadisson.rainbowcore;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.velocitypowered.api.command.CommandManager;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
@@ -20,9 +19,14 @@ import de.remadisson.rainbowcore.user.UserTablistUpdate;
 import de.remadisson.rainbowcore.user.instances.User;
 import org.slf4j.Logger;
 
+import java.sql.Array;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Plugin(
         id = "rainbowcore",
@@ -35,15 +39,13 @@ import java.util.UUID;
 public class velocity {
 
     private final String prefix = files.console;
-    private Logger logger;
-    private ProxyServer server;
+    private static ProxyServer proxy;
 
     public static velocity plugin;
 
     @Inject
     public velocity(ProxyServer server, Logger logger) {
-        this.server = server;
-        this.logger = logger;
+        proxy = server;
         plugin = this;
 
         /*
@@ -72,38 +74,38 @@ public class velocity {
 
 
         //Creating new Lockdown JSON-File
-        files.loadLockdownFile(logger, server);
+        files.loadLockdownFile();
 
-        final CommandManager cm = server.getCommandManager();
+        final CommandManager cm = proxy.getCommandManager();
 
         //Unregistering Commands
         cm.unregister("server");
         cm.unregister("glist");
 
         // Registering Commands
-        cm.register(new lockdownCommand(server, logger), "lockdown");
-        cm.register(new devCoreCommand(server, logger), "devcore");
-        cm.register(new HubCommand(server, logger), "hub", "lobby", "l", "leave");
-        cm.register(new FindCommand(server, logger), "find");
-        cm.register(new SendCommand(server, logger), "send");
-        cm.register(new ServerCommand(server, logger), "server");
-        cm.register(new ListCommand(server,logger), "glist");
+        cm.register(registerCommand(cm, "lockdown"),new lockdownCommand());
+        cm.register(registerCommand(cm,"devcore"),new devCoreCommand());
+        cm.register(registerCommand(cm,"hub", "lobby", "l", "leave"), new HubCommand());
+        cm.register(registerCommand(cm,"find"), new FindCommand());
+        cm.register(registerCommand(cm,"send"), new SendCommand());
+        cm.register(registerCommand(cm,"server"), new ServerCommand());
+        cm.register(registerCommand(cm,"glist"), new ListCommand());
 
         // Registering Listeners
         //server.getEventManager().register(this, injector.getInstance(UserSettings.class));
         //server.getEventManager().register(this, injector.getInstance(UserDataAPI.class));
-        server.getEventManager().register(this, new JoinListener(server));
-        server.getEventManager().register(this, new ServerPingListener(server));
-        server.getEventManager().register(this, new UserManager(server));
+        proxy.getEventManager().register(this, new JoinListener(proxy));
+        proxy.getEventManager().register(this, new ServerPingListener(proxy));
+        proxy.getEventManager().register(this, new UserManager(proxy));
 
-        // Enabling User Save and auto unload
-        UserAutoUnload.UserUpdateAndUnload(server);
+        // Enabling UserSave and AutoUnload
+        UserAutoUnload.UserUpdateAndUnload(proxy);
 
         //Enabling UserTablistUpdate
-        UserTablistUpdate.updateTablist(server);
+        UserTablistUpdate.updateTablist(proxy);
 
         // Sending a Message to Console
-        logger.info((prefix + "§2Rainbow-Core has successfully been started!"));
+        System.out.println((prefix + "§2Rainbow-Core has successfully been started!"));
 
     }
 
@@ -124,8 +126,17 @@ public class velocity {
         }
     }
 
+    public CommandMeta registerCommand(CommandManager cm, String... aliases){
+        String primary = aliases[0];
+        String[] optional = Arrays.stream(aliases).filter(filter -> !filter.equalsIgnoreCase(aliases[0])).toArray(String[]::new);
+        return cm.metaBuilder(primary).aliases(optional).build();
+    }
+
     public static velocity getInstance(){
         return plugin;
     }
 
+    public static ProxyServer getProxy(){
+        return proxy;
+    }
 }

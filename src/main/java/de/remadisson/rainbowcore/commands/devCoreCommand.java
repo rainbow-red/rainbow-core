@@ -5,12 +5,14 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.RawCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import de.remadisson.rainbowcore.api.UserDataAPI;
 import de.remadisson.rainbowcore.files;
 import de.remadisson.rainbowcore.user.enums.UserTablist;
 import de.remadisson.rainbowcore.user.instances.User;
+import de.remadisson.rainbowcore.velocity;
 import net.kyori.adventure.text.TextComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
@@ -18,19 +20,13 @@ import org.slf4j.Logger;
 import java.sql.SQLException;
 import java.util.Collection;
 
-public class devCoreCommand implements Command {
+public class devCoreCommand implements RawCommand {
 
     private final String prefix = files.prefix;
 
-    @Inject
-    private final ProxyServer proxyServer;
-    private final Logger logger;
 
-    @Inject
-    public devCoreCommand(ProxyServer server, Logger logger) {
-        proxyServer = server;
-        this.logger = logger;
-    }
+    private final ProxyServer proxyServer = velocity.getProxy();
+
 
     /*
 
@@ -51,7 +47,10 @@ public class devCoreCommand implements Command {
      */
 
     @Override
-    public void execute(CommandSource sender, @NonNull String[] args){
+    public void execute(final Invocation invocation){
+        final CommandSource sender = invocation.source();
+        final String[] args = invocation.arguments().split(" ");
+
             if(!sender.hasPermission("core.dev.*") &&
                     !sender.hasPermission("core.dev.tablist.*") &&
                     !sender.hasPermission("core.dev.user.*") &&

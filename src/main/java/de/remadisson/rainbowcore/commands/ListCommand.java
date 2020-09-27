@@ -1,37 +1,30 @@
 package de.remadisson.rainbowcore.commands;
 
-import com.google.inject.Inject;
-import com.velocitypowered.api.command.Command;
-import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.RawCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import de.remadisson.rainbowcore.files;
+import de.remadisson.rainbowcore.velocity;
 import net.kyori.adventure.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ListCommand implements Command {
+public class ListCommand implements RawCommand {
 
-    private ProxyServer server;
-    private Logger logger;
-
-    @Inject
-    public ListCommand(ProxyServer server, Logger logger) {
-        this.server = server;
-        this.logger = logger;
-    }
+    private ProxyServer server = velocity.getProxy();
 
     @Override
-    public void execute(CommandSource sender, @NotNull String[] args){
+    public void execute(final Invocation invocation){
+
+        final CommandSource sender = invocation.source();
+        final String[] args = invocation.arguments().split(" ");
+
             ArrayList<String> allowedServers = new ArrayList<>();
             if(sender instanceof Player){
                 for(RegisteredServer server : server.getAllServers()){

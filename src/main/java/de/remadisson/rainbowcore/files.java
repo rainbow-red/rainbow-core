@@ -12,7 +12,6 @@ import de.remadisson.rainbowcore.api.JsonConfigurationAPI;
 import de.remadisson.rainbowcore.manager.LockdownServer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,12 +41,12 @@ public class files {
     // Saving Servers with ther Lockdown Statuses
     public static HashMap<String, LockdownServer> lockdown = new HashMap<>();
 
+    private static final ProxyServer proxy = velocity.getProxy();
+
     /**
      * This Method uses JSON Strings to make clear if there are any servers, where normal players should'nt join.
-     * @param logger
-     * @param server
      */
-    public static void loadLockdownFile(Logger logger, ProxyServer server){
+    public static void loadLockdownFile(){
         // Initing the FileAPI -> Creating Files and Checking if they're empty
         FileAPI fileAPI = new FileAPI("config.json", "plugins/RainbowCore/");
         JsonConfigurationAPI config = new JsonConfigurationAPI(fileAPI);
@@ -64,7 +63,7 @@ public class files {
 
                 lockdownedServers.add("global", lockdowndetails);
 
-                for (RegisteredServer servers : server.getAllServers()) {
+                for (RegisteredServer servers : proxy.getAllServers()) {
                     lockdownedServers.add(servers.getServerInfo().getName().toLowerCase(), lockdowndetails);
                 }
 

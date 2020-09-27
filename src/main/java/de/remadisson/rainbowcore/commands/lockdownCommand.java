@@ -3,6 +3,7 @@ package de.remadisson.rainbowcore.commands;
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.RawCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.TabCompleteEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -11,14 +12,16 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import de.remadisson.rainbowcore.api.MojangAPI;
 import de.remadisson.rainbowcore.files;
 import de.remadisson.rainbowcore.manager.LockdownServer;
+import de.remadisson.rainbowcore.velocity;
 import net.kyori.adventure.text.TextComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import javax.swing.*;
 import java.util.*;
 
-public class lockdownCommand implements Command {
+public class lockdownCommand implements RawCommand {
 
     /*
      *  Lockdown Command Syntax: /lockdown <on/off/add/remove/help> <global/server-name> [player]
@@ -29,17 +32,14 @@ public class lockdownCommand implements Command {
 
     private final String prefix = files.prefix;
 
-    private final ProxyServer server;
-    private final Logger logger;
-
-    @Inject
-    public lockdownCommand(ProxyServer server, Logger logger){
-        this.server = server;
-        this.logger = logger;
-    }
+    private final ProxyServer server = velocity.getProxy();
 
     @Override
-    public void execute(CommandSource sender, @NonNull String[] args) {
+    public void execute(final Invocation invocation) {
+
+        final CommandSource sender = invocation.source();
+        final String[] args = invocation.arguments().split(" ");
+
         if(args.length == 0){
             // Checking for Needed permissons
             if(!sender.hasPermission("core.lockdown.status") && !sender.hasPermission("core.lockdown.*")){

@@ -3,10 +3,12 @@ package de.remadisson.rainbowcore.commands;
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.RawCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import de.remadisson.rainbowcore.files;
+import de.remadisson.rainbowcore.velocity;
 import net.kyori.adventure.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -15,21 +17,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class HubCommand implements Command {
+public class HubCommand implements RawCommand {
 
     private String prefix = files.prefix;
 
-    @Inject
-    private final ProxyServer proxyServer;
-    private final Logger logger;
+    private final ProxyServer proxyServer = velocity.getProxy();
 
-    public HubCommand(ProxyServer server, Logger logger) {
-        proxyServer = server;
-        this.logger = logger;
-    }
 
     @Override
-    public void execute(CommandSource sender, @NotNull String[] args){
+    public void execute(final Invocation invocation){
+
+        final CommandSource sender = invocation.source();
+        final String[] args = invocation.arguments().split(" ");
+
         if(!(sender instanceof Player)){
             sender.sendMessage(TextComponent.of(prefix + "§eOkay...? §8- §7I'm not aksing why, but I am unable to do anything for you! Sorry! >:( "));
             return;
