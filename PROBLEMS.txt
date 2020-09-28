@@ -1,0 +1,3 @@
+- SUGGEST Method in Commands
+- UpdateEvent for Players, that isnt triggert?
+- Args in commands
